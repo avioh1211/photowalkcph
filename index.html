@@ -10,719 +10,713 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --black: #0A0A0A;
-    --yellow: #FFE500;
-    --coral: #FF4B2B;
-    --cyan: #00C9D4;
-    --white: #F5F0E8;
-    --mid: #1A1A1A;
-    --font-display: 'Anton', sans-serif;
-    --font-body: 'DM Sans', sans-serif;
-    --font-mono: 'DM Mono', monospace;
-  }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: var(--font-body);
-    background: var(--black);
-    color: var(--white);
-    overflow-x: hidden;
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --black:  #0A0A0A;
+  --yellow: #FFE500;
+  --coral:  #FF4B2B;
+  --cyan:   #00C9D4;
+  --white:  #F5F0E8;
+  --mid:    #1A1A1A;
+  --font-display: 'Anton', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+  --tap: 48px;
+}
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-body);
+  background: var(--black);
+  color: var(--white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
 
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 2.5rem;
-    background: rgba(10,10,10,0.92);
-    backdrop-filter: blur(8px);
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1.25rem;
+  height: 56px;
+  background: rgba(10,10,10,0.96);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,229,0,0.15);
+}
+.nav-logo {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  color: var(--yellow);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none; border: none;
+  cursor: pointer; padding: 6px;
+  width: var(--tap); height: var(--tap);
+  align-items: center;
+}
+.nav-hamburger span {
+  display: block; width: 22px; height: 2px;
+  background: var(--white); border-radius: 2px;
+  transition: all 0.25s;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.nav-links {
+  display: flex; gap: 1.5rem;
+  list-style: none; align-items: center;
+}
+.nav-links a {
+  text-decoration: none; color: var(--white);
+  font-size: 0.85rem; font-weight: 300;
+  letter-spacing: 0.05em; transition: color 0.2s;
+  display: flex; align-items: center; height: var(--tap);
+}
+.nav-links a:hover { color: var(--yellow); }
+.admin-badge {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: var(--yellow); color: var(--black);
+  padding: 0.2rem 0.55rem; border-radius: 2px;
+}
+#admin-nav-actions { display: none; align-items: center; gap: 0.75rem; }
+#logout-btn {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: transparent; color: rgba(245,240,232,0.4);
+  border: 1px solid rgba(245,240,232,0.2);
+  padding: 0.25rem 0.6rem; cursor: pointer;
+  border-radius: 2px; transition: all 0.2s; min-height: 32px;
+}
+#logout-btn:hover { color: var(--coral); border-color: var(--coral); }
+
+@media (max-width: 768px) {
+  .nav-hamburger { display: flex; }
+  .nav-links {
+    position: fixed; top: 56px; left: 0; right: 0;
+    background: rgba(10,10,10,0.98); backdrop-filter: blur(12px);
+    flex-direction: column; gap: 0; padding: 0.5rem 0 1rem;
     border-bottom: 1px solid rgba(255,229,0,0.15);
+    transform: translateY(-120%); transition: transform 0.3s ease; z-index: 998;
   }
-  .nav-logo {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.12em;
-    color: var(--yellow);
-    text-transform: uppercase;
-  }
-  .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
+  .nav-links.open { transform: translateY(0); }
+  .nav-links li { width: 100%; }
   .nav-links a {
-    text-decoration: none;
-    color: var(--white);
-    font-size: 0.85rem;
-    font-weight: 300;
-    letter-spacing: 0.05em;
-    transition: color 0.2s;
+    display: flex; align-items: center; padding: 0 1.5rem;
+    font-size: 1rem; height: 52px;
+    border-bottom: 1px solid rgba(255,229,0,0.07);
   }
-  .nav-links a:hover { color: var(--yellow); }
-  .admin-badge {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    background: var(--yellow);
-    color: var(--black);
-    padding: 0.2rem 0.6rem;
-    border-radius: 2px;
-    font-weight: 500;
-  }
-  #admin-nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  #logout-btn {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    background: transparent;
-    color: rgba(245,240,232,0.4);
-    border: 1px solid rgba(245,240,232,0.2);
-    padding: 0.25rem 0.6rem;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.2s;
-  }
-  #logout-btn:hover { color: var(--coral); border-color: var(--coral); }
+  #admin-login-link a { color: rgba(245,240,232,0.4) !important; }
+  #admin-nav-actions { padding: 0.75rem 1.5rem; flex-direction: row; flex-wrap: wrap; gap: 0.6rem; }
+}
 
-  /* ── HERO ── */
-  .hero {
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero-left {
-    background: var(--yellow);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 6rem 3rem 4rem;
-    position: relative;
-  }
-  .hero-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.2em;
-    color: var(--black);
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
-  .hero-title {
-    font-family: var(--font-display);
-    font-size: clamp(4rem, 7vw, 7.5rem);
-    line-height: 0.92;
-    color: var(--black);
-    text-transform: uppercase;
-  }
-  .hero-title span { display: block; }
-  .hero-tag {
-    margin-top: 2rem;
-    display: inline-block;
-    background: var(--black);
-    color: var(--yellow);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    padding: 0.4rem 0.8rem;
-    text-transform: uppercase;
-  }
-  .hero-right {
-    background: var(--black);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 6rem 3rem 4rem;
-    border-left: 3px solid var(--yellow);
-  }
-  .hero-desc {
-    font-size: 1.25rem;
-    font-weight: 300;
-    line-height: 1.7;
-    color: var(--white);
-    max-width: 400px;
-    margin-bottom: 2.5rem;
-  }
-  .hero-stat { display: flex; gap: 2.5rem; margin-top: 2rem; }
-  .stat-block .num {
-    font-family: var(--font-display);
-    font-size: 3rem;
-    color: var(--coral);
-    line-height: 1;
-  }
-  .stat-block .lbl {
-    font-size: 0.75rem;
-    font-family: var(--font-mono);
-    letter-spacing: 0.1em;
-    color: rgba(245,240,232,0.5);
-    text-transform: uppercase;
-    margin-top: 0.2rem;
-  }
-  .btn {
-    display: inline-block;
-    padding: 0.9rem 2rem;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-  }
-  .btn-yellow { background: var(--yellow); color: var(--black); }
-  .btn-yellow:hover { background: #FFD000; }
-  .btn-outline {
-    background: transparent;
-    color: var(--white);
-    border: 1px solid rgba(245,240,232,0.3);
-    margin-left: 1rem;
-  }
-  .btn-outline:hover { border-color: var(--yellow); color: var(--yellow); }
-  .film-strip {
-    position: absolute;
-    top: 0; right: -40px;
-    width: 80px; height: 100%;
-    background: var(--black);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    padding: 2rem 0;
-  }
-  .film-hole {
-    width: 18px; height: 12px;
-    background: var(--yellow);
-    border-radius: 2px;
-    margin: 0 auto;
-    opacity: 0.6;
-  }
+/* ── HERO ── */
+.hero {
+  min-height: 100svh; display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative; overflow: hidden; padding-top: 56px;
+}
+.hero-left {
+  background: var(--yellow); display: flex;
+  flex-direction: column; justify-content: flex-end;
+  padding: 3rem 2.5rem; position: relative;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  letter-spacing: 0.18em; color: var(--black);
+  text-transform: uppercase; margin-bottom: 0.75rem;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 7.5rem);
+  line-height: 0.92; color: var(--black); text-transform: uppercase;
+}
+.hero-title span { display: block; }
+.hero-tag {
+  margin-top: 1.5rem; display: inline-block;
+  background: var(--black); color: var(--yellow);
+  font-family: var(--font-mono); font-size: 0.68rem;
+  letter-spacing: 0.14em; padding: 0.4rem 0.8rem; text-transform: uppercase;
+}
+.hero-right {
+  background: var(--black); display: flex;
+  flex-direction: column; justify-content: center;
+  padding: 3rem 2.5rem; border-left: 3px solid var(--yellow);
+}
+.hero-desc {
+  font-size: 1.1rem; font-weight: 300; line-height: 1.7;
+  color: var(--white); max-width: 400px; margin-bottom: 2rem;
+}
+.hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.hero-stat { display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap; }
+.stat-block .num {
+  font-family: var(--font-display); font-size: 2.5rem;
+  color: var(--coral); line-height: 1;
+}
+.stat-block .lbl {
+  font-size: 0.7rem; font-family: var(--font-mono);
+  letter-spacing: 0.1em; color: rgba(245,240,232,0.5);
+  text-transform: uppercase; margin-top: 0.2rem;
+}
+.film-strip {
+  position: absolute; top: 0; right: -40px;
+  width: 80px; height: 100%; background: var(--black);
+  display: flex; flex-direction: column;
+  justify-content: space-around; padding: 2rem 0;
+}
+.film-hole {
+  width: 18px; height: 12px; background: var(--yellow);
+  border-radius: 2px; margin: 0 auto; opacity: 0.6;
+}
 
-  /* ── SECTION HEADERS ── */
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--yellow);
-    margin-bottom: 0.75rem;
-  }
-  .section-title {
-    font-family: var(--font-display);
-    font-size: clamp(2.5rem, 4vw, 4rem);
-    line-height: 1;
-    text-transform: uppercase;
-  }
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--tap); padding: 0.75rem 1.5rem;
+  font-family: var(--font-mono); font-size: 0.8rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  text-decoration: none; cursor: pointer; border: none;
+  border-radius: 2px; transition: all 0.2s; white-space: nowrap;
+}
+.btn-yellow { background: var(--yellow); color: var(--black); }
+.btn-yellow:hover { background: #FFD000; }
+.btn-outline {
+  background: transparent; color: var(--white);
+  border: 1px solid rgba(245,240,232,0.3);
+}
+.btn-outline:hover { border-color: var(--yellow); color: var(--yellow); }
+.btn-dark { background: var(--black); color: var(--yellow); }
+.btn-dark:hover { background: #222; }
+.btn-coral { background: var(--coral); color: var(--white); }
+.btn-coral:hover { background: #e03a1f; }
 
-  /* ── NEXT WALK ── */
-  .next-walk {
-    background: var(--coral);
-    padding: 5rem 0;
-    overflow: hidden;
-    position: relative;
-  }
-  .next-walk-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2.5rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
-  }
-  .next-walk .section-label { color: rgba(10,10,10,0.6); }
-  .next-walk .section-title { color: var(--black); }
-  .walk-meta { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1rem; }
-  .meta-row {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    border-top: 1px solid rgba(10,10,10,0.2);
-    padding-top: 1rem;
-  }
-  .meta-key {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(10,10,10,0.55);
-    min-width: 90px;
-  }
-  .meta-val { font-size: 1rem; font-weight: 500; color: var(--black); }
-  .walk-desc-block { color: var(--black); }
-  .walk-desc-block p {
-    font-size: 1.05rem;
-    font-weight: 300;
-    line-height: 1.75;
-    margin-bottom: 1.5rem;
-    opacity: 0.85;
-  }
-  .btn-dark { background: var(--black); color: var(--yellow); }
-  .btn-dark:hover { background: #222; }
-  .big-date {
-    font-family: var(--font-display);
-    font-size: clamp(5rem, 12vw, 11rem);
-    line-height: 0.85;
-    color: rgba(10,10,10,0.12);
-    position: absolute;
-    right: 2rem;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    white-space: nowrap;
-  }
+/* ── SECTION SHARED ── */
+.section-label {
+  font-family: var(--font-mono); font-size: 0.7rem;
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--yellow); margin-bottom: 0.6rem;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  line-height: 1; text-transform: uppercase;
+}
 
-  /* ── ROUTE MAP ── */
-  .route-section { background: var(--mid); padding: 5rem 0; }
-  .route-inner { max-width: 1200px; margin: 0 auto; padding: 0 2.5rem; }
-  .route-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 2.5rem;
-  }
-  #map {
-    width: 100%;
-    height: 500px;
-    border: 2px solid rgba(255,229,0,0.2);
-    border-radius: 4px;
-  }
-  .map-controls {
-    margin-top: 1.5rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    gap: 0.75rem;
-    align-items: end;
-  }
-  .map-controls label {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: rgba(245,240,232,0.5);
-    display: block;
-    margin-bottom: 0.4rem;
-  }
-  .map-controls input, .map-controls textarea {
-    width: 100%;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,229,0,0.2);
-    color: var(--white);
-    padding: 0.7rem 1rem;
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    border-radius: 2px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .map-controls input:focus, .map-controls textarea:focus { border-color: var(--yellow); }
-  .location-list { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
-  .loc-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.75rem 1rem;
-    background: rgba(255,229,0,0.06);
-    border: 1px solid rgba(255,229,0,0.15);
-    border-radius: 2px;
-  }
-  .loc-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--yellow);
-    flex-shrink: 0;
-  }
-  .loc-dot.user { background: var(--cyan); }
-  .loc-dot.admin-stop { background: var(--yellow); }
-  .loc-name { font-size: 0.9rem; font-weight: 500; flex: 1; }
-  .loc-desc { font-size: 0.78rem; color: rgba(245,240,232,0.5); font-family: var(--font-mono); }
-  .loc-type {
-    font-size: 0.65rem;
-    font-family: var(--font-mono);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.2rem 0.5rem;
-    border-radius: 2px;
-  }
-  .loc-type.route { background: rgba(255,229,0,0.15); color: var(--yellow); }
-  .loc-type.suggested { background: rgba(0,201,212,0.15); color: var(--cyan); }
+/* ── NEXT WALK ── */
+.next-walk { background: var(--coral); padding: 4rem 0; overflow: hidden; position: relative; }
+.next-walk-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;
+}
+.next-walk .section-label { color: rgba(10,10,10,0.6); }
+.next-walk .section-title { color: var(--black); }
+.walk-meta { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.meta-row {
+  display: flex; align-items: baseline; gap: 0.75rem;
+  border-top: 1px solid rgba(10,10,10,0.2); padding-top: 0.75rem;
+}
+.meta-key {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(10,10,10,0.55); min-width: 80px; flex-shrink: 0;
+}
+.meta-val { font-size: 0.95rem; font-weight: 500; color: var(--black); }
+.walk-desc-block { color: var(--black); }
+.walk-desc-block p {
+  font-size: 1rem; font-weight: 300; line-height: 1.75;
+  margin-bottom: 1.25rem; opacity: 0.85;
+}
+.big-date {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 12vw, 11rem); line-height: 0.85;
+  color: rgba(10,10,10,0.12); position: absolute;
+  right: 1rem; bottom: 1rem; pointer-events: none; white-space: nowrap;
+}
 
-  /* ── ADMIN PANEL ── */
-  #admin-panel {
-    display: none;
-    margin-top: 2rem;
-    background: rgba(255,229,0,0.04);
-    border: 1px solid rgba(255,229,0,0.35);
-    border-radius: 4px;
-    padding: 1.5rem;
-  }
-  #admin-panel.visible { display: block; }
-  .admin-panel-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.25rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(255,229,0,0.15);
-  }
-  .admin-panel-header h3 {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--yellow);
-  }
-  .admin-panel-header .lock-icon { font-size: 0.9rem; }
-  .admin-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr 120px 120px auto;
-    gap: 0.75rem;
-    align-items: end;
-  }
-  .admin-controls label {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: rgba(255,229,0,0.6);
-    display: block;
-    margin-bottom: 0.35rem;
-  }
-  .admin-controls input {
-    width: 100%;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,229,0,0.3);
-    color: var(--white);
-    padding: 0.65rem 0.9rem;
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    border-radius: 2px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .admin-controls input:focus { border-color: var(--yellow); }
-  .btn-admin {
-    background: var(--yellow);
-    color: var(--black);
-    border: none;
-    padding: 0.7rem 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 2px;
-    white-space: nowrap;
-    transition: background 0.2s;
-    height: 42px;
-  }
-  .btn-admin:hover { background: #FFD000; }
-  .admin-tip {
-    margin-top: 0.75rem;
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    color: rgba(255,229,0,0.4);
-    letter-spacing: 0.08em;
-  }
+/* ── ROUTE MAP ── */
+.route-section { background: var(--mid); padding: 4rem 0; }
+.route-inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.route-header {
+  display: flex; justify-content: space-between;
+  align-items: flex-end; margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap;
+}
+#map {
+  width: 100%; height: 420px;
+  border: 2px solid rgba(255,229,0,0.2); border-radius: 4px; touch-action: pan-y;
+}
 
-  /* ── ADMIN LOGIN MODAL ── */
-  .modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    backdrop-filter: blur(6px);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s;
-  }
-  .modal-backdrop.open { opacity: 1; pointer-events: all; }
-  .modal-box {
-    background: var(--mid);
-    border: 1px solid rgba(255,229,0,0.3);
-    border-radius: 6px;
-    padding: 2.5rem;
-    width: 100%;
-    max-width: 400px;
-    position: relative;
-    transform: translateY(20px);
-    transition: transform 0.25s;
-  }
-  .modal-backdrop.open .modal-box { transform: translateY(0); }
-  .modal-close {
-    position: absolute;
-    top: 1rem; right: 1rem;
-    background: none;
-    border: none;
-    color: rgba(245,240,232,0.4);
-    font-size: 1.2rem;
-    cursor: pointer;
-    line-height: 1;
-    transition: color 0.2s;
-  }
-  .modal-close:hover { color: var(--white); }
-  .modal-title {
-    font-family: var(--font-display);
-    font-size: 1.8rem;
-    text-transform: uppercase;
-    color: var(--yellow);
-    margin-bottom: 0.35rem;
-  }
-  .modal-sub {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    color: rgba(245,240,232,0.4);
-    text-transform: uppercase;
-    margin-bottom: 1.75rem;
-  }
-  .modal-group { margin-bottom: 1.2rem; }
-  .modal-group label {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: rgba(245,240,232,0.5);
-    display: block;
-    margin-bottom: 0.4rem;
-  }
-  .modal-group input {
-    width: 100%;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,229,0,0.2);
-    color: var(--white);
-    padding: 0.75rem 1rem;
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    border-radius: 2px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .modal-group input:focus { border-color: var(--yellow); }
-  .modal-error {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--coral);
-    letter-spacing: 0.08em;
-    min-height: 1.2em;
-    margin-bottom: 0.75rem;
-  }
-  .btn-modal-login {
-    width: 100%;
-    background: var(--yellow);
-    color: var(--black);
-    border: none;
-    padding: 0.9rem 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: background 0.2s;
-  }
-  .btn-modal-login:hover { background: #FFD000; }
+/* ── LOCATION LIST ── */
+.location-list { margin-top: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.loc-item {
+  display: flex; align-items: center; gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  background: rgba(255,229,0,0.06); border: 1px solid rgba(255,229,0,0.15);
+  border-radius: 2px; min-height: var(--tap);
+  transition: background 0.2s;
+}
+.loc-item.hidden-stop {
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.08);
+}
+.loc-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--yellow); flex-shrink: 0;
+}
+.loc-dot.hidden { background: rgba(245,240,232,0.25); }
+.loc-name { font-size: 0.9rem; font-weight: 500; flex: 1; }
+.loc-desc {
+  font-size: 0.75rem; color: rgba(245,240,232,0.5);
+  font-family: var(--font-mono); margin-top: 0.1rem;
+}
+.loc-type {
+  font-size: 0.6rem; font-family: var(--font-mono);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.2rem 0.5rem; border-radius: 2px; flex-shrink: 0;
+  background: rgba(255,229,0,0.15); color: var(--yellow);
+}
+.loc-type.direction {
+  background: rgba(245,240,232,0.08); color: rgba(245,240,232,0.4);
+}
 
-  /* ── GALLERY ── */
-  .gallery-section { background: var(--black); padding: 5rem 0; }
-  .gallery-inner { max-width: 1200px; margin: 0 auto; padding: 0 2.5rem; }
+/* delete button on stop items */
+.stop-delete-btn {
+  display: none;
+  background: transparent; border: 1px solid rgba(255,75,43,0.3);
+  color: var(--coral); cursor: pointer; border-radius: 2px;
+  padding: 0.2rem 0.5rem; font-family: var(--font-mono);
+  font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase;
+  transition: all 0.2s; flex-shrink: 0; min-height: 28px;
+}
+.stop-delete-btn:hover { background: var(--coral); color: var(--white); }
+body.admin-mode .stop-delete-btn { display: flex; align-items: center; }
 
-  /* ── RSVP ── */
-  .rsvp-section {
-    background: var(--cyan);
-    padding: 5rem 0;
-    position: relative;
-    overflow: hidden;
-  }
-  .rsvp-bg-text {
-    font-family: var(--font-display);
-    font-size: clamp(6rem, 15vw, 14rem);
-    color: rgba(10,10,10,0.08);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    white-space: nowrap;
-    pointer-events: none;
-  }
-  .rsvp-inner {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 0 2.5rem;
-    position: relative;
-    z-index: 1;
-    text-align: center;
-  }
-  .rsvp-section .section-label { color: rgba(10,10,10,0.55); }
-  .rsvp-section .section-title { color: var(--black); margin-bottom: 1rem; }
-  .rsvp-sub {
-    font-size: 1.05rem;
-    font-weight: 300;
-    color: rgba(10,10,10,0.7);
-    margin-bottom: 2.5rem;
-  }
-  .rsvp-form { display: flex; flex-direction: column; gap: 1rem; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .form-group { display: flex; flex-direction: column; gap: 0.4rem; text-align: left; }
-  .form-group label {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: rgba(10,10,10,0.55);
-  }
-  .form-group input, .form-group select {
-    background: rgba(10,10,10,0.08);
-    border: 1px solid rgba(10,10,10,0.2);
-    color: var(--black);
-    padding: 0.75rem 1rem;
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    border-radius: 2px;
-    outline: none;
-    transition: border-color 0.2s;
-    width: 100%;
-  }
-  .form-group input:focus, .form-group select:focus { border-color: var(--black); }
-  .form-group select { cursor: pointer; }
-  .btn-black {
-    background: var(--black);
-    color: var(--yellow);
-    width: 100%;
-    padding: 1rem 2rem;
-    font-size: 0.85rem;
-    border-radius: 2px;
-    margin-top: 0.5rem;
-  }
-  .btn-black:hover { background: #222; }
-  .rsvp-note { font-size: 0.75rem; color: rgba(10,10,10,0.5); margin-top: 1rem; }
+/* ── ADMIN PANEL (route stops) ── */
+#admin-panel {
+  display: none; margin-top: 2rem;
+  background: rgba(255,229,0,0.04);
+  border: 1px solid rgba(255,229,0,0.35);
+  border-radius: 4px; padding: 1.25rem;
+}
+#admin-panel.visible { display: block; }
+.admin-panel-header {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin-bottom: 1.1rem; padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255,229,0,0.15); flex-wrap: wrap;
+}
+.admin-panel-header h3 {
+  font-family: var(--font-mono); font-size: 0.78rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--yellow); flex: 1;
+}
+.admin-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.admin-controls .span-2 { grid-column: span 2; }
+.admin-controls label {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,229,0,0.6); display: block; margin-bottom: 0.35rem;
+}
+.admin-controls input {
+  width: 100%; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,229,0,0.3); color: var(--white);
+  padding: 0.7rem 0.9rem; font-family: var(--font-body); font-size: 1rem;
+  border-radius: 2px; outline: none; transition: border-color 0.2s; min-height: var(--tap);
+}
+.admin-controls input:focus { border-color: var(--yellow); }
+.btn-admin {
+  background: var(--yellow); color: var(--black); border: none;
+  padding: 0.75rem 1rem; font-family: var(--font-mono); font-size: 0.75rem;
+  letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+  border-radius: 2px; transition: background 0.2s; min-height: var(--tap); width: 100%;
+}
+.btn-admin:hover { background: #FFD000; }
+.admin-tip {
+  margin-top: 0.75rem; font-family: var(--font-mono); font-size: 0.62rem;
+  color: rgba(255,229,0,0.4); letter-spacing: 0.07em; line-height: 1.5;
+}
 
-  /* ── SHARE SECTION ── */
-  .share-section {
-    background: var(--black);
-    border-top: 1px solid rgba(255,229,0,0.12);
-    border-bottom: 1px solid rgba(255,229,0,0.12);
-    padding: 5rem 0;
-  }
-  .share-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2.5rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
-  }
-  .share-card {
-    background: var(--mid);
-    border: 1px solid rgba(255,229,0,0.15);
-    border-radius: 4px;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
-  .share-status {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(245,240,232,0.4);
-  }
-  .pulse-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: rgba(245,240,232,0.2);
-    flex-shrink: 0;
-    transition: background 0.3s;
-  }
-  .pulse-dot.active {
-    background: #4ade80;
-    box-shadow: 0 0 0 3px rgba(74,222,128,0.2);
-    animation: pulse 1.5s infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 3px rgba(74,222,128,0.2); }
-    50% { box-shadow: 0 0 0 6px rgba(74,222,128,0.05); }
-  }
+/* ── NEW WALK BUILDER PANEL ── */
+.walk-builder-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  display: flex; pointer-events: none;
+}
+.walk-builder-overlay.open { pointer-events: all; }
+.walk-builder-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+  opacity: 0; transition: opacity 0.3s;
+}
+.walk-builder-overlay.open .walk-builder-backdrop { opacity: 1; }
+.walk-builder-panel {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 100%; max-width: 480px;
+  background: var(--mid); border-left: 1px solid rgba(255,229,0,0.2);
+  display: flex; flex-direction: column;
+  transform: translateX(100%); transition: transform 0.35s ease;
+  overflow: hidden;
+}
+.walk-builder-overlay.open .walk-builder-panel { transform: translateX(0); }
 
-  /* ── FOOTER ── */
-  footer {
-    background: var(--black);
-    border-top: 1px solid rgba(255,229,0,0.1);
-    padding: 3rem 2.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .footer-logo {
-    font-family: var(--font-display);
-    font-size: 1.8rem;
-    letter-spacing: 0.05em;
-    color: var(--yellow);
-  }
-  .footer-copy {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    color: rgba(245,240,232,0.3);
-  }
-  .footer-links { display: flex; gap: 1.5rem; }
-  .footer-links a {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-decoration: none;
-    color: rgba(245,240,232,0.4);
-    transition: color 0.2s;
-  }
-  .footer-links a:hover { color: var(--yellow); }
+.wb-header {
+  background: var(--black); padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(255,229,0,0.15);
+  display: flex; align-items: center; gap: 1rem; flex-shrink: 0;
+}
+.wb-header h2 {
+  font-family: var(--font-display); font-size: 1.5rem;
+  text-transform: uppercase; color: var(--yellow); flex: 1;
+}
+.wb-close {
+  background: rgba(255,255,255,0.08); border: none; color: var(--white);
+  width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; transition: background 0.2s; flex-shrink: 0;
+}
+.wb-close:hover { background: rgba(255,255,255,0.16); }
+.wb-body { flex: 1; overflow-y: auto; padding: 1.25rem 1.5rem; }
+.wb-section-title {
+  font-family: var(--font-mono); font-size: 0.65rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,229,0,0.6); margin-bottom: 0.75rem; margin-top: 1.5rem;
+}
+.wb-section-title:first-child { margin-top: 0; }
 
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; bottom: 2rem; right: 2rem;
-    background: var(--yellow); color: var(--black);
-    padding: 0.8rem 1.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    border-radius: 2px;
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.3s;
-    z-index: 9999;
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
+/* walk builder form fields */
+.wb-field { margin-bottom: 0.75rem; }
+.wb-field label {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(245,240,232,0.45); display: block; margin-bottom: 0.35rem;
+}
+.wb-field input {
+  width: 100%; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12); color: var(--white);
+  padding: 0.7rem 0.9rem; font-family: var(--font-body); font-size: 1rem;
+  border-radius: 2px; outline: none; transition: border-color 0.2s; min-height: var(--tap);
+}
+.wb-field input:focus { border-color: var(--yellow); }
+.wb-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
 
-  @media (max-width: 768px) {
-    .hero { grid-template-columns: 1fr; }
-    .hero-left { padding: 8rem 1.5rem 2.5rem; }
-    .hero-right { padding: 2.5rem 1.5rem 3rem; border-left: none; border-top: 3px solid var(--yellow); }
-    .next-walk-inner { grid-template-columns: 1fr; }
-    .map-controls { grid-template-columns: 1fr; }
-    .admin-controls { grid-template-columns: 1fr; }
-    .form-row { grid-template-columns: 1fr; }
-    nav { padding: 1rem 1.5rem; }
-    .nav-links { gap: 1.2rem; }
-    .share-inner { grid-template-columns: 1fr; }
-  }
+/* toggle switch */
+.wb-toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 0.9rem;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 2px; margin-bottom: 0.75rem;
+}
+.wb-toggle-label {
+  font-family: var(--font-mono); font-size: 0.68rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,240,232,0.6);
+}
+.wb-toggle-sub {
+  font-size: 0.65rem; color: rgba(245,240,232,0.3);
+  margin-top: 0.15rem; font-family: var(--font-mono);
+}
+.toggle-switch {
+  position: relative; width: 44px; height: 24px; flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0; cursor: pointer;
+  background: rgba(255,255,255,0.15); border-radius: 24px;
+  transition: background 0.25s;
+}
+.toggle-slider::before {
+  content: ''; position: absolute;
+  width: 18px; height: 18px; left: 3px; top: 3px;
+  background: var(--white); border-radius: 50%; transition: transform 0.25s;
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--yellow); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); background: var(--black); }
+
+/* walk builder stop list */
+.wb-stop-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+.wb-stop-item {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255,229,0,0.06); border: 1px solid rgba(255,229,0,0.15);
+  border-radius: 2px;
+}
+.wb-stop-item.is-direction {
+  background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08);
+}
+.wb-stop-num {
+  font-family: var(--font-mono); font-size: 0.65rem;
+  color: var(--yellow); min-width: 20px; text-align: center;
+}
+.wb-stop-num.direction-num { color: rgba(245,240,232,0.3); }
+.wb-stop-info { flex: 1; min-width: 0; }
+.wb-stop-name { font-size: 0.88rem; font-weight: 500; }
+.wb-stop-meta {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  color: rgba(245,240,232,0.35); margin-top: 0.15rem; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.wb-stop-badge {
+  font-family: var(--font-mono); font-size: 0.55rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.15rem 0.4rem; border-radius: 2px; flex-shrink: 0;
+}
+.wb-stop-badge.pin { background: rgba(255,229,0,0.15); color: var(--yellow); }
+.wb-stop-badge.dir { background: rgba(255,255,255,0.07); color: rgba(245,240,232,0.35); }
+.wb-remove-btn {
+  background: none; border: none; color: rgba(245,240,232,0.25);
+  cursor: pointer; font-size: 1rem; line-height: 1; padding: 4px;
+  transition: color 0.2s; flex-shrink: 0;
+}
+.wb-remove-btn:hover { color: var(--coral); }
+
+.wb-empty {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  color: rgba(245,240,232,0.25); text-align: center;
+  padding: 2rem 1rem; letter-spacing: 0.08em; line-height: 1.6;
+}
+
+/* walk builder routing status */
+.wb-routing-status {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-family: var(--font-mono); font-size: 0.65rem;
+  letter-spacing: 0.08em; color: rgba(245,240,232,0.35);
+  margin-bottom: 1rem; padding: 0.6rem 0.9rem;
+  background: rgba(255,255,255,0.03); border-radius: 2px;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+.routing-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(245,240,232,0.15); flex-shrink: 0;
+}
+.routing-dot.loading {
+  background: var(--yellow);
+  animation: blink 0.8s ease-in-out infinite;
+}
+.routing-dot.done { background: #4ade80; }
+.routing-dot.error { background: var(--coral); }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.wb-footer {
+  padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255,229,0,0.15);
+  background: var(--black); display: flex; flex-direction: column; gap: 0.6rem; flex-shrink: 0;
+}
+.wb-publish-btn {
+  width: 100%; background: var(--yellow); color: var(--black); border: none;
+  padding: 1rem; font-family: var(--font-mono); font-size: 0.85rem;
+  letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+  border-radius: 2px; transition: background 0.2s; min-height: var(--tap);
+}
+.wb-publish-btn:hover { background: #FFD000; }
+.wb-publish-btn:disabled {
+  background: rgba(255,229,0,0.2); color: rgba(10,10,10,0.5); cursor: not-allowed;
+}
+.wb-discard-btn {
+  width: 100%; background: transparent; color: rgba(245,240,232,0.35);
+  border: 1px solid rgba(245,240,232,0.12); padding: 0.7rem;
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em;
+  text-transform: uppercase; cursor: pointer; border-radius: 2px;
+  transition: all 0.2s; min-height: 40px;
+}
+.wb-discard-btn:hover { color: var(--coral); border-color: var(--coral); }
+
+/* ── ADMIN LOGIN MODAL ── */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(6px); z-index: 10000;
+  display: flex; align-items: flex-end; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: var(--mid); border: 1px solid rgba(255,229,0,0.3);
+  border-radius: 12px 12px 0 0; padding: 2rem 1.5rem 2.5rem;
+  width: 100%; max-width: 480px; position: relative;
+  transform: translateY(40px); transition: transform 0.3s ease;
+}
+.modal-backdrop.open .modal-box { transform: translateY(0); }
+.modal-close {
+  position: absolute; top: 1rem; right: 1rem;
+  background: rgba(255,255,255,0.08); border: none; color: var(--white);
+  font-size: 1rem; cursor: pointer; width: 36px; height: 36px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.modal-close:hover { background: rgba(255,255,255,0.16); }
+.modal-handle {
+  width: 36px; height: 4px; background: rgba(255,255,255,0.2);
+  border-radius: 2px; margin: 0 auto 1.5rem;
+}
+.modal-title {
+  font-family: var(--font-display); font-size: 2rem;
+  text-transform: uppercase; color: var(--yellow); margin-bottom: 0.2rem;
+}
+.modal-sub {
+  font-family: var(--font-mono); font-size: 0.68rem;
+  letter-spacing: 0.1em; color: rgba(245,240,232,0.4);
+  text-transform: uppercase; margin-bottom: 1.5rem;
+}
+.modal-group { margin-bottom: 1rem; }
+.modal-group label {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(245,240,232,0.5); display: block; margin-bottom: 0.4rem;
+}
+.modal-group input {
+  width: 100%; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,229,0,0.2); color: var(--white);
+  padding: 0.85rem 1rem; font-family: var(--font-body); font-size: 1rem;
+  border-radius: 2px; outline: none; transition: border-color 0.2s; min-height: var(--tap);
+}
+.modal-group input:focus { border-color: var(--yellow); }
+.modal-error {
+  font-family: var(--font-mono); font-size: 0.7rem;
+  color: var(--coral); letter-spacing: 0.07em; min-height: 1.2em; margin-bottom: 0.75rem;
+}
+.btn-modal-login {
+  width: 100%; background: var(--yellow); color: var(--black); border: none;
+  padding: 1rem; font-family: var(--font-mono); font-size: 0.85rem;
+  letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+  border-radius: 2px; transition: background 0.2s; min-height: var(--tap);
+}
+.btn-modal-login:hover { background: #FFD000; }
+
+/* ── SOCIAL ── */
+.gallery-section { background: var(--black); padding: 4rem 0; }
+.gallery-inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.social-grid {
+  display: flex; justify-content: center;
+  gap: 2.5rem; margin-top: 2.5rem; flex-wrap: wrap;
+}
+.social-link {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.85rem; text-decoration: none;
+}
+.social-icon-box {
+  width: 72px; height: 72px;
+  border: 1px solid rgba(255,229,0,0.25); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+.social-link:hover .social-icon-box { border-color: var(--yellow); background: rgba(255,229,0,0.07); }
+.social-label {
+  font-family: var(--font-mono); font-size: 0.68rem;
+  letter-spacing: 0.14em; text-transform: uppercase; color: rgba(245,240,232,0.5);
+}
+
+/* ── RSVP ── */
+.rsvp-section { background: var(--cyan); padding: 4rem 0; position: relative; overflow: hidden; }
+.rsvp-bg-text {
+  font-family: var(--font-display); font-size: clamp(5rem, 18vw, 14rem);
+  color: rgba(10,10,10,0.08); position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  white-space: nowrap; pointer-events: none;
+}
+.rsvp-inner {
+  max-width: 680px; margin: 0 auto; padding: 0 1.5rem;
+  position: relative; z-index: 1; text-align: center;
+}
+.rsvp-section .section-label { color: rgba(10,10,10,0.55); }
+.rsvp-section .section-title { color: var(--black); margin-bottom: 0.75rem; }
+.rsvp-sub { font-size: 1rem; font-weight: 300; color: rgba(10,10,10,0.7); line-height: 1.6; }
+
+/* ── SHARE LOCATION ── */
+.share-section {
+  background: var(--black);
+  border-top: 1px solid rgba(255,229,0,0.12);
+  border-bottom: 1px solid rgba(255,229,0,0.12);
+  padding: 4rem 0;
+}
+.share-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+}
+.share-card {
+  background: var(--mid); border: 1px solid rgba(255,229,0,0.15);
+  border-radius: 4px; padding: 1.5rem;
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.share-status {
+  display: flex; align-items: center; gap: 0.75rem;
+  font-family: var(--font-mono); font-size: 0.72rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,240,232,0.4);
+}
+.pulse-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(245,240,232,0.2); flex-shrink: 0; transition: background 0.3s;
+}
+.pulse-dot.active {
+  background: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,0.2);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(74,222,128,0.2); }
+  50%      { box-shadow: 0 0 0 7px rgba(74,222,128,0.04); }
+}
+.share-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--black); border-top: 1px solid rgba(255,229,0,0.1);
+  padding: 2rem 1.5rem; display: flex;
+  justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+}
+.footer-logo { font-family: var(--font-display); font-size: 1.6rem; letter-spacing: 0.05em; color: var(--yellow); }
+.footer-copy { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.08em; color: rgba(245,240,232,0.3); }
+.footer-links { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+.footer-links a {
+  font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+  text-decoration: none; color: rgba(245,240,232,0.4); transition: color 0.2s;
+  min-height: 36px; display: flex; align-items: center;
+}
+.footer-links a:hover { color: var(--yellow); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 1.25rem; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--yellow); color: var(--black);
+  padding: 0.75rem 1.5rem; font-family: var(--font-mono);
+  font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+  border-radius: 40px; opacity: 0; transition: all 0.3s; z-index: 9999;
+  white-space: nowrap; max-width: calc(100vw - 2rem); text-align: center;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* ════════════════════
+   MOBILE  ≤ 768px
+════════════════════ */
+@media (max-width: 768px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-left { padding: 2.5rem 1.25rem 2rem; }
+  .hero-right { padding: 2rem 1.25rem 2.5rem; border-left: none; border-top: 3px solid var(--yellow); }
+  .film-strip { display: none; }
+  .hero-cta { flex-direction: column; }
+  .hero-cta .btn { width: 100%; }
+  .next-walk-inner { grid-template-columns: 1fr; gap: 2rem; }
+  .big-date { display: none; }
+  .route-header { flex-direction: column; align-items: flex-start; }
+  #map { height: 300px; }
+  .admin-controls { grid-template-columns: 1fr; }
+  .admin-controls .span-2 { grid-column: span 1; }
+  .share-inner { grid-template-columns: 1fr; gap: 2rem; }
+  footer { flex-direction: column; align-items: flex-start; }
+  .walk-builder-panel { max-width: 100%; border-left: none; border-top: 1px solid rgba(255,229,0,0.2); }
+}
+@media (max-width: 380px) {
+  .hero-title { font-size: 2.8rem; }
+  .section-title { font-size: 2rem; }
+}
 </style>
 </head>
 <body>
 
-<!-- ADMIN LOGIN MODAL -->
-<div class="modal-backdrop" id="admin-modal" role="dialog" aria-modal="true" aria-label="Admin login">
+<!-- ── ADMIN LOGIN MODAL ── -->
+<div class="modal-backdrop" id="admin-modal" role="dialog" aria-modal="true">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeAdminModal()" aria-label="Close">✕</button>
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeAdminModal()">✕</button>
     <div class="modal-title">Admin</div>
     <div class="modal-sub">Route management access</div>
     <div class="modal-group">
@@ -731,7 +725,8 @@
     </div>
     <div class="modal-group">
       <label for="admin-pass-input">Password</label>
-      <input type="password" id="admin-pass-input" placeholder="••••••••" autocomplete="current-password"
+      <input type="password" id="admin-pass-input" placeholder="••••••••"
+             autocomplete="current-password"
              onkeydown="if(event.key==='Enter') attemptAdminLogin()">
     </div>
     <div class="modal-error" id="modal-error"></div>
@@ -739,25 +734,117 @@
   </div>
 </div>
 
-<!-- NAV -->
+<!-- ── NEW WALK BUILDER PANEL ── -->
+<div class="walk-builder-overlay" id="walk-builder">
+  <div class="walk-builder-backdrop" onclick="closeWalkBuilder()"></div>
+  <div class="walk-builder-panel">
+    <div class="wb-header">
+      <h2>New Walk</h2>
+      <button class="wb-close" onclick="closeWalkBuilder()">✕</button>
+    </div>
+    <div class="wb-body">
+
+      <!-- Walk name -->
+      <p class="wb-section-title">Walk details</p>
+      <div class="wb-field">
+        <label for="wb-walk-name">Walk name / neighbourhood</label>
+        <input type="text" id="wb-walk-name" placeholder="e.g. Vesterbro · Meatpacking District">
+      </div>
+      <div class="wb-field">
+        <label for="wb-walk-date">Date</label>
+        <input type="text" id="wb-walk-date" placeholder="e.g. Saturday, 14 June 2025">
+      </div>
+
+      <!-- Add stop form -->
+      <p class="wb-section-title" style="margin-top:1.75rem;">Add a stop</p>
+      <div class="wb-field">
+        <label for="wb-stop-name">Stop name</label>
+        <input type="text" id="wb-stop-name" placeholder="e.g. Kødbyen entrance">
+      </div>
+      <div class="wb-field">
+        <label for="wb-stop-desc">Description</label>
+        <input type="text" id="wb-stop-desc" placeholder="e.g. Neon signs, gritty textures">
+      </div>
+      <div class="wb-row">
+        <div class="wb-field">
+          <label for="wb-stop-lat">Latitude</label>
+          <input type="number" id="wb-stop-lat" placeholder="55.6700" step="0.0001" inputmode="decimal">
+        </div>
+        <div class="wb-field">
+          <label for="wb-stop-lng">Longitude</label>
+          <input type="number" id="wb-stop-lng" placeholder="12.5590" step="0.0001" inputmode="decimal">
+        </div>
+      </div>
+
+      <!-- Visibility toggle -->
+      <div class="wb-toggle-row">
+        <div>
+          <div class="wb-toggle-label">Show pin on map</div>
+          <div class="wb-toggle-sub">Turn off for direction-only stops</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="wb-stop-visible" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <button class="btn-admin" onclick="wbAddStop()" style="margin-bottom:1.5rem;">
+        + Add stop to walk
+      </button>
+
+      <!-- Routing status -->
+      <div class="wb-routing-status" id="wb-routing-status" style="display:none;">
+        <div class="routing-dot" id="wb-routing-dot"></div>
+        <span id="wb-routing-text">Calculating street route…</span>
+      </div>
+
+      <!-- Stop list being built -->
+      <p class="wb-section-title">Stops in this walk</p>
+      <div class="wb-stop-list" id="wb-stop-list">
+        <div class="wb-empty" id="wb-empty-msg">
+          No stops yet — add your first one above,<br>or tap the map to fill coordinates.
+        </div>
+      </div>
+
+      <p class="admin-tip" style="margin-top:0.5rem;">
+        💡 Tap anywhere on the map to fill latitude &amp; longitude automatically.
+      </p>
+    </div>
+
+    <div class="wb-footer">
+      <button class="wb-publish-btn" id="wb-publish-btn"
+              onclick="publishWalk()" disabled>
+        Publish walk →
+      </button>
+      <button class="wb-discard-btn" onclick="discardWalk()">
+        Discard &amp; close
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
 <nav>
   <div class="nav-logo">CPH · Photowalks</div>
-  <ul class="nav-links">
-    <li><a href="#next-walk">Next Walk</a></li>
-    <li><a href="#route">Route</a></li>
-    <li><a href="#gallery">Gallery</a></li>
-    <li><a href="#rsvp">RSVP</a></li>
-    <li id="admin-nav-actions" style="display:none;">
+  <button class="nav-hamburger" id="hamburger" aria-label="Open menu" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#next-walk" onclick="closeNav()">Next Walk</a></li>
+    <li><a href="#route"     onclick="closeNav()">Route</a></li>
+    <li><a href="#gallery"   onclick="closeNav()">Gallery</a></li>
+    <li><a href="#rsvp"      onclick="closeNav()">RSVP</a></li>
+    <li id="admin-nav-actions">
       <span class="admin-badge">Admin</span>
       <button id="logout-btn" onclick="adminLogout()">Log out</button>
     </li>
     <li id="admin-login-link">
-      <a href="#" onclick="openAdminModal(event)" style="color:rgba(245,240,232,0.3); font-size:0.75rem;">Admin</a>
+      <a href="#" onclick="openAdminModal(event); closeNav()">Admin</a>
     </li>
   </ul>
 </nav>
 
-<!-- HERO -->
+<!-- ── HERO ── -->
 <section class="hero">
   <div class="hero-left">
     <div class="film-strip" aria-hidden="true">
@@ -767,84 +854,54 @@
     </div>
     <p class="hero-eyebrow">Est. 2022 · Copenhagen, DK</p>
     <h1 class="hero-title">
-      <span>Copen</span>
-      <span>hagen</span>
-      <span>Photo</span>
-      <span>walks</span>
+      <span>Copen</span><span>hagen</span><span>Photo</span><span>walks</span>
     </h1>
     <div class="hero-tag">Monthly · Free · Social</div>
   </div>
   <div class="hero-right">
     <p class="hero-desc">
-      A casual crew of photographers exploring Copenhagen one neighbourhood at a time — every month, one walk, endless frames.
+      A casual crew of photographers exploring Copenhagen one neighbourhood
+      at a time — every month, one walk, endless frames.
     </p>
-    <div>
-      <a href="#rsvp" class="btn btn-yellow">Join next walk</a>
+    <div class="hero-cta">
+      <a href="#rsvp"    class="btn btn-yellow">Join next walk</a>
       <a href="#gallery" class="btn btn-outline">See past walks</a>
     </div>
     <div class="hero-stat">
-      <div class="stat-block">
-        <div class="num">30+</div>
-        <div class="lbl">Members</div>
-      </div>
-      <div class="stat-block">
-        <div class="num">18</div>
-        <div class="lbl">Walks done</div>
-      </div>
-      <div class="stat-block">
-        <div class="num">12</div>
-        <div class="lbl">Nbhds explored</div>
-      </div>
+      <div class="stat-block"><div class="num">30+</div><div class="lbl">Members</div></div>
+      <div class="stat-block"><div class="num">18</div><div class="lbl">Walks done</div></div>
+      <div class="stat-block"><div class="num">12</div><div class="lbl">Nbhds explored</div></div>
     </div>
   </div>
 </section>
 
-<!-- NEXT WALK -->
+<!-- ── NEXT WALK ── -->
 <section class="next-walk" id="next-walk">
   <div class="next-walk-inner">
     <div>
       <p class="section-label">Upcoming</p>
-      <h2 class="section-title" style="color: var(--black);">Next Walk</h2>
+      <h2 class="section-title" style="color:var(--black);">Next Walk</h2>
       <div class="walk-meta">
-        <div class="meta-row">
-          <span class="meta-key">Date</span>
-          <span class="meta-val">Saturday, 10 May 2025</span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-key">Time</span>
-          <span class="meta-val">10:00 — 13:00</span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-key">Meet</span>
-          <span class="meta-val">Nørreport Station, main entrance</span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-key">Route</span>
-          <span class="meta-val">Nørrebro · Assistens Kirkegård · Blågårds Plads</span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-key">Skill level</span>
-          <span class="meta-val">All welcome — any camera, any level</span>
-        </div>
+        <div class="meta-row"><span class="meta-key">Date</span><span class="meta-val" id="info-date">Saturday, 10 May 2025</span></div>
+        <div class="meta-row"><span class="meta-key">Time</span><span class="meta-val">10:00 — 13:00</span></div>
+        <div class="meta-row"><span class="meta-key">Meet</span><span class="meta-val">Nørreport Station, main entrance</span></div>
+        <div class="meta-row"><span class="meta-key">Route</span><span class="meta-val" id="info-route">Nørrebro · Assistens · Blågårds Plads</span></div>
+        <div class="meta-row"><span class="meta-key">Level</span><span class="meta-val">All welcome — any camera</span></div>
       </div>
     </div>
     <div class="walk-desc-block">
-      <p>
-        This month we head into the heart of Nørrebro — one of Copenhagen's most vibrant and photogenic
-        neighbourhoods. We'll wander through the calm of Assistens Kirkegård, catch the street life on
-        Ravnsborggade, and end at Blågårds Plads for coffee and a photo chat.
-      </p>
-      <p>
-        Bring whatever camera you have. The vibe is relaxed, curious, and social. No group critiques,
-        no pressure — just exploring and shooting together.
-      </p>
+      <p>This month we head into the heart of Nørrebro — one of Copenhagen's most vibrant
+         neighbourhoods. We'll wander through Assistens Kirkegård, catch street life on
+         Ravnsborggade, and end at Blågårds Plads for coffee and a photo chat.</p>
+      <p>Bring whatever camera you have. The vibe is relaxed, curious, and social.
+         No critiques, no pressure — just exploring and shooting together.</p>
       <a href="#rsvp" class="btn btn-dark">Reserve my spot</a>
     </div>
   </div>
   <div class="big-date" aria-hidden="true">MAY</div>
 </section>
 
-<!-- ROUTE & MAP -->
+<!-- ── ROUTE & MAP ── -->
 <section class="route-section" id="route">
   <div class="route-inner">
     <div class="route-header">
@@ -852,57 +909,66 @@
         <p class="section-label">Interactive</p>
         <h2 class="section-title">The Route</h2>
       </div>
-      <p style="font-size:0.85rem; color:rgba(245,240,232,0.4); font-family:var(--font-mono); max-width:260px; text-align:right;">
-        Yellow pins = planned stops · Cyan pins = member suggestions
+      <p style="font-size:0.8rem; color:rgba(245,240,232,0.4); font-family:var(--font-mono); line-height:1.5;">
+        Yellow pins = stops · Grey pins = directions only
       </p>
     </div>
 
-    <!-- MAP -->
     <div id="map"></div>
 
-    <!-- LOCATION LIST -->
+    <!-- Location list -->
     <div class="location-list" id="location-list">
-      <div class="loc-item">
+      <div class="loc-item" data-stop-id="0">
         <div class="loc-dot"></div>
         <div style="flex:1">
           <div class="loc-name">Nørreport Station</div>
           <div class="loc-desc">Meetup point · 10:00 sharp</div>
         </div>
-        <span class="loc-type route">Route</span>
+        <span class="loc-type">Route</span>
+        <button class="stop-delete-btn" onclick="deleteStop(0)">✕ Remove</button>
       </div>
-      <div class="loc-item">
+      <div class="loc-item" data-stop-id="1">
         <div class="loc-dot"></div>
         <div style="flex:1">
           <div class="loc-name">Assistens Kirkegård</div>
           <div class="loc-desc">Great light, old stones, quiet paths</div>
         </div>
-        <span class="loc-type route">Route</span>
+        <span class="loc-type">Route</span>
+        <button class="stop-delete-btn" onclick="deleteStop(1)">✕ Remove</button>
       </div>
-      <div class="loc-item">
+      <div class="loc-item" data-stop-id="2">
         <div class="loc-dot"></div>
         <div style="flex:1">
           <div class="loc-name">Ravnsborggade</div>
           <div class="loc-desc">Street life, vintage shops, colour</div>
         </div>
-        <span class="loc-type route">Route</span>
+        <span class="loc-type">Route</span>
+        <button class="stop-delete-btn" onclick="deleteStop(2)">✕ Remove</button>
       </div>
-      <div class="loc-item">
+      <div class="loc-item" data-stop-id="3">
         <div class="loc-dot"></div>
         <div style="flex:1">
           <div class="loc-name">Blågårds Plads</div>
           <div class="loc-desc">Final stop — coffee &amp; chat</div>
         </div>
-        <span class="loc-type route">Route</span>
+        <span class="loc-type">Route</span>
+        <button class="stop-delete-btn" onclick="deleteStop(3)">✕ Remove</button>
       </div>
     </div>
 
-    <!-- ADMIN PANEL (shown only when logged in) -->
+    <!-- Admin panel -->
     <div id="admin-panel">
       <div class="admin-panel-header">
-        <span class="lock-icon">🔐</span>
-        <h3>Admin — Add Route Stop</h3>
-        <span class="admin-badge" style="margin-left:auto;">Logged in</span>
+        <span>🔐</span>
+        <h3>Admin — Manage Route</h3>
+        <span class="admin-badge">Logged in</span>
       </div>
+
+      <!-- Add individual stop -->
+      <p style="font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.14em;
+                text-transform:uppercase; color:rgba(255,229,0,0.5); margin-bottom:0.75rem;">
+        Add stop to current walk
+      </p>
       <div class="admin-controls">
         <div>
           <label for="admin-stop-name">Stop name</label>
@@ -910,113 +976,91 @@
         </div>
         <div>
           <label for="admin-stop-desc">Description</label>
-          <input type="text" id="admin-stop-desc" placeholder="e.g. Bold public space, great patterns">
+          <input type="text" id="admin-stop-desc" placeholder="e.g. Bold patterns">
         </div>
         <div>
           <label for="admin-stop-lat">Latitude</label>
-          <input type="number" id="admin-stop-lat" placeholder="55.6867" step="0.0001">
+          <input type="number" id="admin-stop-lat" placeholder="55.6867" step="0.0001" inputmode="decimal">
         </div>
         <div>
           <label for="admin-stop-lng">Longitude</label>
-          <input type="number" id="admin-stop-lng" placeholder="12.5542" step="0.0001">
+          <input type="number" id="admin-stop-lng" placeholder="12.5542" step="0.0001" inputmode="decimal">
         </div>
-        <div>
-          <button class="btn-admin" onclick="adminAddStop()">+ Add to route</button>
+        <div class="span-2" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+          <button class="btn-admin" onclick="adminAddStop()">+ Add stop</button>
+          <button class="btn-admin" onclick="openWalkBuilder()"
+                  style="background:var(--coral); color:var(--white);">
+            🗺 Create new walk
+          </button>
         </div>
       </div>
-      <p class="admin-tip">
-        💡 Click anywhere on the map to auto-fill latitude &amp; longitude below.
-      </p>
+      <p class="admin-tip">💡 Tap the map to auto-fill coordinates. Deleting all stops clears the route.</p>
     </div>
 
-    <!-- PUBLIC SUGGEST A LOCATION -->
-    <div class="map-controls" style="margin-top:2rem;">
-      <div>
-        <label>Suggest a location</label>
-        <input type="text" id="loc-name-input" placeholder="e.g. The Lakes, Superkilen…">
-      </div>
-      <div>
-        <label>Why it's great for photos</label>
-        <input type="text" id="loc-desc-input" placeholder="e.g. Reflections at golden hour">
-      </div>
-      <div>
-        <button class="btn btn-yellow" onclick="addLocation()"
-          style="white-space:nowrap; height:44px; border-radius:2px; border:none; cursor:pointer;">
-          + Add spot
-        </button>
-      </div>
-    </div>
   </div>
 </section>
 
-<!-- SHARE LOCATION -->
+<!-- ── SHARE LOCATION ── -->
 <section class="share-section" id="share">
   <div class="share-inner">
-    <div class="share-left">
+    <div>
       <p class="section-label" style="color:var(--yellow);">For late arrivals</p>
       <h2 class="section-title">Share Your Location</h2>
-      <p style="font-size:1rem; font-weight:300; color:rgba(245,240,232,0.6); line-height:1.7; margin-top:0.75rem; max-width:380px;">
-        Running late or can't find the group? Hit the button, copy the link, and paste it in the group chat
+      <p style="font-size:1rem; font-weight:300; color:rgba(245,240,232,0.6); line-height:1.7; margin-top:0.75rem;">
+        Running late? Hit the button, copy the link, paste it in the group chat
         — everyone sees exactly where you are on Google Maps.
       </p>
     </div>
-    <div class="share-right">
-      <div class="share-card">
-        <div class="share-status" id="share-status">
-          <div class="pulse-dot" id="pulse-dot"></div>
-          <span id="status-text">Not sharing</span>
-        </div>
-        <div id="coords-display" style="display:none;">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.3rem;">
-            <p style="font-family:var(--font-mono); font-size:0.7rem; color:rgba(245,240,232,0.4); letter-spacing:0.1em; margin:0;">YOUR POSITION</p>
-            <p id="timestamp" style="font-family:var(--font-mono); font-size:0.7rem; color:rgba(245,240,232,0.3); margin:0;"></p>
-          </div>
-          <p id="coords-text" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--yellow); margin:0;"></p>
-          <div id="refresh-bar-wrap" style="margin-top:0.75rem; height:3px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
-            <div id="refresh-bar" style="height:100%; width:100%; background:var(--yellow); transform-origin:left; transition:none;"></div>
-          </div>
-          <p id="next-refresh" style="font-family:var(--font-mono); font-size:0.65rem; color:rgba(245,240,232,0.3); margin-top:0.3rem; letter-spacing:0.08em;"></p>
-        </div>
-        <button class="btn btn-yellow" id="share-btn" onclick="startSharing()"
-          style="width:100%; border:none; cursor:pointer; border-radius:2px; font-size:0.85rem;">
-          Start auto-sharing
-        </button>
-        <button id="stop-btn" onclick="stopSharing()"
-          style="display:none; width:100%; background:transparent; border:1px solid rgba(245,240,232,0.2);
-                 color:rgba(245,240,232,0.5); padding:0.75rem; font-family:var(--font-mono); font-size:0.75rem;
-                 letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; border-radius:2px;">
-          Stop sharing
-        </button>
-        <div id="link-box" style="display:none; margin-top:0.25rem;">
-          <p style="font-family:var(--font-mono); font-size:0.65rem; color:rgba(245,240,232,0.35); letter-spacing:0.1em; margin-bottom:0.4rem; text-transform:uppercase;">
-            Shareable link — updates every 2 min
-          </p>
-          <input id="share-link" type="text" readonly
-            style="width:100%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,229,0,0.3);
-                   color:var(--white); padding:0.65rem 0.9rem; font-family:var(--font-mono);
-                   font-size:0.72rem; border-radius:2px; outline:none;">
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;">
-            <button class="btn btn-yellow" onclick="copyLink()"
-              style="border:none; cursor:pointer; border-radius:2px; font-size:0.72rem; padding:0.6rem 0.5rem;">
-              Copy link
-            </button>
-            <button class="btn" onclick="nativeShare()"
-              style="background:var(--cyan); color:var(--black); border:none; cursor:pointer;
-                     border-radius:2px; font-size:0.72rem; padding:0.6rem 0.5rem;
-                     letter-spacing:0.08em; font-family:var(--font-mono); text-transform:uppercase;">
-              Share via...
-            </button>
-          </div>
-        </div>
-        <p style="font-size:0.72rem; color:rgba(245,240,232,0.3); font-family:var(--font-mono); margin-top:1rem; line-height:1.5;">
-          Auto-refreshes every 2 min while active — nothing is stored anywhere.
-        </p>
+    <div class="share-card">
+      <div class="share-status">
+        <div class="pulse-dot" id="pulse-dot"></div>
+        <span id="status-text">Not sharing</span>
       </div>
+      <div id="coords-display" style="display:none;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+          <p style="font-family:var(--font-mono); font-size:0.68rem; color:rgba(245,240,232,0.4); letter-spacing:0.1em; margin:0;">YOUR POSITION</p>
+          <p id="timestamp" style="font-family:var(--font-mono); font-size:0.68rem; color:rgba(245,240,232,0.3); margin:0;"></p>
+        </div>
+        <p id="coords-text" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--yellow); margin:0;"></p>
+        <div style="margin-top:0.75rem; height:3px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+          <div id="refresh-bar" style="height:100%; width:100%; background:var(--yellow);"></div>
+        </div>
+        <p id="next-refresh" style="font-family:var(--font-mono); font-size:0.62rem; color:rgba(245,240,232,0.3); margin-top:0.3rem;"></p>
+      </div>
+      <button class="btn btn-yellow" id="share-btn" onclick="startSharing()" style="width:100%; border:none; cursor:pointer;">
+        Start auto-sharing
+      </button>
+      <button id="stop-btn" onclick="stopSharing()"
+              style="display:none; width:100%; background:transparent; border:1px solid rgba(245,240,232,0.2);
+                     color:rgba(245,240,232,0.5); padding:0.75rem; font-family:var(--font-mono);
+                     font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase;
+                     cursor:pointer; border-radius:2px; min-height:var(--tap);">
+        Stop sharing
+      </button>
+      <div id="link-box" style="display:none;">
+        <p style="font-family:var(--font-mono); font-size:0.62rem; color:rgba(245,240,232,0.35); letter-spacing:0.1em; margin-bottom:0.4rem; text-transform:uppercase;">
+          Shareable link — updates every 2 min
+        </p>
+        <input id="share-link" type="text" readonly
+               style="width:100%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,229,0,0.3);
+                      color:var(--white); padding:0.65rem 0.9rem; font-family:var(--font-mono);
+                      font-size:0.72rem; border-radius:2px; outline:none; min-height:var(--tap);">
+        <div class="share-btn-row" style="margin-top:0.5rem;">
+          <button class="btn btn-yellow" onclick="copyLink()" style="border:none; cursor:pointer; font-size:0.75rem; padding:0.6rem 0.5rem;">Copy link</button>
+          <button class="btn" onclick="nativeShare()"
+                  style="background:var(--cyan); color:var(--black); border:none; cursor:pointer;
+                         font-size:0.75rem; padding:0.6rem 0.5rem; letter-spacing:0.08em;
+                         font-family:var(--font-mono); text-transform:uppercase;">Share via…</button>
+        </div>
+      </div>
+      <p style="font-size:0.7rem; color:rgba(245,240,232,0.3); font-family:var(--font-mono); line-height:1.5;">
+        Auto-refreshes every 2 min — nothing is stored anywhere.
+      </p>
     </div>
   </div>
 </section>
 
-<!-- SOCIAL / GALLERY -->
+<!-- ── SOCIAL ── -->
 <section class="gallery-section" id="gallery">
   <div class="gallery-inner" style="text-align:center;">
     <p class="section-label">Follow along</p>
@@ -1024,85 +1068,86 @@
     <p style="font-size:1rem; font-weight:300; color:rgba(245,240,232,0.5); margin-top:0.75rem; line-height:1.7;">
       Photos from every walk and group chat on our socials.
     </p>
-    <div style="display:flex; justify-content:center; gap:4rem; margin-top:3rem;">
-      <a href="https://www.instagram.com/cph_photo_walks/" target="_blank"
-         style="display:flex; flex-direction:column; align-items:center; gap:1rem; text-decoration:none;">
-        <div style="width:80px; height:80px; border:1px solid rgba(255,229,0,0.25); border-radius:4px;
-                    display:flex; align-items:center; justify-content:center; transition:border-color 0.2s, background 0.2s;"
-             onmouseover="this.style.borderColor='var(--yellow)'; this.style.background='rgba(255,229,0,0.07)'"
-             onmouseout="this.style.borderColor='rgba(255,229,0,0.25)'; this.style.background='transparent'">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-               stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <div class="social-grid">
+      <a class="social-link" href="https://www.instagram.com/cph_photo_walks/" target="_blank" rel="noopener">
+        <div class="social-icon-box">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5"/>
             <circle cx="12" cy="12" r="4"/>
             <circle cx="17.5" cy="6.5" r="1.2" fill="var(--yellow)" stroke="none"/>
           </svg>
         </div>
-        <span style="font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.15em;
-                     text-transform:uppercase; color:rgba(245,240,232,0.5);">@cph_photo_walks</span>
+        <span class="social-label">@cph_photo_walks</span>
       </a>
-      <a href="https://www.facebook.com/groups/665374108947503" target="_blank"
-         style="display:flex; flex-direction:column; align-items:center; gap:1rem; text-decoration:none;">
-        <div style="width:80px; height:80px; border:1px solid rgba(255,229,0,0.25); border-radius:4px;
-                    display:flex; align-items:center; justify-content:center; transition:border-color 0.2s, background 0.2s;"
-             onmouseover="this.style.borderColor='var(--yellow)'; this.style.background='rgba(255,229,0,0.07)'"
-             onmouseout="this.style.borderColor='rgba(255,229,0,0.25)'; this.style.background='transparent'">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-               stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <a class="social-link" href="https://www.facebook.com/groups/665374108947503" target="_blank" rel="noopener">
+        <div class="social-icon-box">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
           </svg>
         </div>
-        <span style="font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.15em;
-                     text-transform:uppercase; color:rgba(245,240,232,0.5);">Facebook Group</span>
+        <span class="social-label">Facebook Group</span>
       </a>
     </div>
   </div>
 </section>
 
-<!-- RSVP -->
+<!-- ── RSVP ── -->
 <section class="rsvp-section" id="rsvp">
   <div class="rsvp-bg-text" aria-hidden="true">RSVP</div>
   <div class="rsvp-inner">
     <p class="section-label">Join us</p>
     <h2 class="section-title">Reserve Your Spot</h2>
-    <p class="rsvp-sub">Free to join — just let us know you're coming so we can plan ahead.</p>
-    <div class="rsvp-form">
-      <div class="form-row">
-        <div class="form-group">
-          <label>First name</label>
-          <input type="text" id="rsvp-name" placeholder="Your name">
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="rsvp-email" placeholder="you@email.com">
-        </div>
+    <p class="rsvp-sub" style="margin-bottom:0;">
+      RSVP coming soon — in the meantime join us on Facebook and sign up directly on the event page.
+    </p>
+    <div id="fb-event-link-box" style="display:none; margin-top:1.75rem;">
+      <a id="fb-event-link" href="#" target="_blank" rel="noopener"
+         class="btn btn-dark" style="display:inline-flex; align-items:center; gap:0.6rem;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+        </svg>
+        RSVP on Facebook
+      </a>
+    </div>
+    <div id="rsvp-admin-panel"
+         style="display:none; margin-top:2.5rem; background:rgba(10,10,10,0.15);
+                border:1px solid rgba(10,10,10,0.25); border-radius:4px; padding:1.25rem; text-align:left;">
+      <p style="font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.14em;
+                text-transform:uppercase; color:rgba(10,10,10,0.55); margin-bottom:0.75rem;">
+        🔐 Admin — Facebook Event Link
+      </p>
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+        <input type="url" id="fb-link-input" placeholder="https://www.facebook.com/events/..."
+               style="flex:1; min-width:200px; background:rgba(10,10,10,0.08);
+                      border:1px solid rgba(10,10,10,0.25); color:var(--black);
+                      padding:0.75rem 1rem; font-family:var(--font-body); font-size:1rem;
+                      border-radius:2px; outline:none; min-height:var(--tap);">
+        <button onclick="saveFbLink()"
+                style="background:var(--black); color:var(--yellow); border:none; padding:0.75rem 1.25rem;
+                       font-family:var(--font-mono); font-size:0.75rem; letter-spacing:0.1em;
+                       text-transform:uppercase; cursor:pointer; border-radius:2px; min-height:var(--tap); white-space:nowrap;">
+          Save link
+        </button>
+        <button onclick="removeFbLink()"
+                style="background:transparent; color:rgba(10,10,10,0.45); border:1px solid rgba(10,10,10,0.2);
+                       padding:0.75rem 1rem; font-family:var(--font-mono); font-size:0.75rem;
+                       letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
+                       border-radius:2px; min-height:var(--tap); white-space:nowrap;">
+          Remove
+        </button>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Camera / gear</label>
-          <input type="text" id="rsvp-gear" placeholder="Fuji X-T5, phone, film…">
-        </div>
-        <div class="form-group">
-          <label>Experience level</label>
-          <select id="rsvp-level">
-            <option>First time out</option>
-            <option>Hobbyist</option>
-            <option>Enthusiast</option>
-            <option>Semi-pro / Pro</option>
-          </select>
-        </div>
-      </div>
-      <button class="btn btn-black" onclick="submitRSVP()">Confirm my spot →</button>
-      <p class="rsvp-note">No spam, no newsletters — just a confirmation and any last-minute walk updates.</p>
+      <p style="font-family:var(--font-mono); font-size:0.62rem; color:rgba(10,10,10,0.4); margin-top:0.6rem; letter-spacing:0.07em; line-height:1.5;">
+        Paste the full Facebook event URL — the RSVP button appears instantly for visitors.
+      </p>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- ── FOOTER ── -->
 <footer>
   <div class="footer-logo">CPW</div>
   <div class="footer-links">
-    <a href="https://www.instagram.com/cph_photo_walks/" target="_blank">Instagram</a>
+    <a href="https://www.instagram.com/cph_photo_walks/" target="_blank" rel="noopener">Instagram</a>
     <a href="#">Flickr</a>
     <a href="#">Contact</a>
   </div>
@@ -1112,36 +1157,412 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ─────────────────────────────────────────
+/* ════════════════════════════════════════
+   DATA — current active walk stops
+   Each stop: { name, lat, lng, desc, showPin, marker }
+════════════════════════════════════════ */
+let activeStops = [
+  { name: "Nørreport Station",   lat: 55.6833, lng: 12.5714, desc: "Meetup point",               showPin: true,  marker: null },
+  { name: "Assistens Kirkegård", lat: 55.6882, lng: 12.5540, desc: "Great light, old stones",    showPin: true,  marker: null },
+  { name: "Ravnsborggade",       lat: 55.6902, lng: 12.5531, desc: "Street life & colour",       showPin: true,  marker: null },
+  { name: "Blågårds Plads",      lat: 55.6898, lng: 12.5481, desc: "Final stop — coffee",        showPin: true,  marker: null }
+];
+
+/* Walk builder working list */
+let wbStops = [];
+
+/* ════════════════════════════════════════
+   MAP SETUP
+════════════════════════════════════════ */
+const map = L.map('map', { tap: true }).setView([55.686, 12.562], 14);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap © CARTO', maxZoom: 19
+}).addTo(map);
+
+/* Icon factories */
+function makeYellowIcon() {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:14px;height:14px;background:#FFE500;border-radius:50%;
+                border:2px solid #0A0A0A;box-shadow:0 0 0 2px #FFE500;"></div>`,
+    iconSize: [14, 14], iconAnchor: [7, 7]
+  });
+}
+function makeGhostIcon() {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:10px;height:10px;background:rgba(245,240,232,0.2);border-radius:50%;
+                border:2px solid rgba(245,240,232,0.3);"></div>`,
+    iconSize: [10, 10], iconAnchor: [5, 5]
+  });
+}
+
+/* Active route polyline */
+let activePolyline = null;
+
+/* Draw the full active walk on the map */
+function renderActiveWalk() {
+  /* remove old markers */
+  activeStops.forEach(s => { if (s.marker) { map.removeLayer(s.marker); s.marker = null; } });
+  /* remove old polyline */
+  if (activePolyline) { map.removeLayer(activePolyline); activePolyline = null; }
+  if (activeStops.length === 0) return;
+
+  /* place markers */
+  activeStops.forEach(s => {
+    const icon = s.showPin ? makeYellowIcon() : makeGhostIcon();
+    s.marker = L.marker([s.lat, s.lng], { icon })
+      .addTo(map)
+      .bindPopup(`<strong>${escapeHTML(s.name)}</strong><br>${escapeHTML(s.desc)}`);
+  });
+
+  /* fetch street route from OSRM then draw line */
+  fetchStreetRoute(activeStops, function(latlngs) {
+    activePolyline = L.polyline(latlngs, {
+      color: '#FFE500', weight: 3, opacity: 0.6, dashArray: '6 6'
+    }).addTo(map);
+  });
+}
+
+/* OSRM street routing — walking profile */
+async function fetchStreetRoute(stops, callback) {
+  if (stops.length < 2) {
+    callback(stops.map(s => [s.lat, s.lng]));
+    return;
+  }
+  const coords = stops.map(s => `${s.lng},${s.lat}`).join(';');
+  const url = `https://router.project-osrm.org/route/v1/foot/${coords}?overview=full&geometries=geojson`;
+  try {
+    const res  = await fetch(url);
+    const data = await res.json();
+    if (data.routes && data.routes[0]) {
+      /* OSRM returns [lng,lat] — Leaflet wants [lat,lng] */
+      const latlngs = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+      callback(latlngs);
+    } else {
+      /* fallback: straight lines */
+      callback(stops.map(s => [s.lat, s.lng]));
+    }
+  } catch(e) {
+    /* offline fallback */
+    callback(stops.map(s => [s.lat, s.lng]));
+  }
+}
+
+/* Initial render */
+renderActiveWalk();
+
+/* Map click handler — fills coords into whichever panel is active */
+map.on('click', function(e) {
+  if (!isAdmin) return;
+  const lat = e.latlng.lat.toFixed(5);
+  const lng = e.latlng.lng.toFixed(5);
+  const wbOpen = document.getElementById('walk-builder').classList.contains('open');
+  if (wbOpen) {
+    document.getElementById('wb-stop-lat').value = lat;
+    document.getElementById('wb-stop-lng').value = lng;
+  } else {
+    document.getElementById('admin-stop-lat').value = lat;
+    document.getElementById('admin-stop-lng').value = lng;
+  }
+  showToast('Coordinates filled ✓');
+});
+
+/* ════════════════════════════════════════
+   DELETE STOP (current walk)
+════════════════════════════════════════ */
+function deleteStop(id) {
+  const idx = activeStops.findIndex((_, i) => i === id);
+  if (idx === -1) return;
+  /* remove marker */
+  if (activeStops[idx].marker) map.removeLayer(activeStops[idx].marker);
+  activeStops.splice(idx, 1);
+
+  /* remove list row */
+  const row = document.querySelector(`[data-stop-id="${id}"]`);
+  if (row) row.remove();
+
+  /* re-index remaining rows */
+  document.querySelectorAll('.loc-item[data-stop-id]').forEach((el, i) => {
+    el.dataset.stopId = i;
+    const btn = el.querySelector('.stop-delete-btn');
+    if (btn) btn.setAttribute('onclick', `deleteStop(${i})`);
+  });
+
+  /* redraw route */
+  if (activePolyline) { map.removeLayer(activePolyline); activePolyline = null; }
+  if (activeStops.length >= 2) {
+    fetchStreetRoute(activeStops, function(latlngs) {
+      activePolyline = L.polyline(latlngs, {
+        color: '#FFE500', weight: 3, opacity: 0.6, dashArray: '6 6'
+      }).addTo(map);
+    });
+  }
+  showToast('Stop removed');
+}
+
+/* ════════════════════════════════════════
+   ADD STOP (admin panel — current walk)
+════════════════════════════════════════ */
+function adminAddStop() {
+  if (!isAdmin) return;
+  const name = document.getElementById('admin-stop-name').value.trim();
+  const desc = document.getElementById('admin-stop-desc').value.trim();
+  const lat  = parseFloat(document.getElementById('admin-stop-lat').value);
+  const lng  = parseFloat(document.getElementById('admin-stop-lng').value);
+
+  if (!name) { showToast('Please enter a stop name'); return; }
+  if (isNaN(lat) || isNaN(lng)) { showToast('Enter coordinates or tap the map'); return; }
+  if (lat < 55.5 || lat > 55.9 || lng < 12.3 || lng > 12.8) {
+    showToast('Coordinates seem outside Copenhagen'); return;
+  }
+
+  const newStop = { name, lat, lng, desc: desc || 'Route stop', showPin: true, marker: null };
+  activeStops.push(newStop);
+
+  /* add marker */
+  newStop.marker = L.marker([lat, lng], { icon: makeYellowIcon() })
+    .addTo(map)
+    .bindPopup(`<strong>${escapeHTML(name)}</strong><br>${escapeHTML(desc || 'Route stop')}`);
+
+  /* extend route */
+  if (activePolyline) { map.removeLayer(activePolyline); activePolyline = null; }
+  fetchStreetRoute(activeStops, function(latlngs) {
+    activePolyline = L.polyline(latlngs, {
+      color: '#FFE500', weight: 3, opacity: 0.6, dashArray: '6 6'
+    }).addTo(map);
+  });
+
+  /* add list row */
+  const idx = activeStops.length - 1;
+  const list = document.getElementById('location-list');
+  const item = document.createElement('div');
+  item.className = 'loc-item';
+  item.dataset.stopId = idx;
+  item.innerHTML = `
+    <div class="loc-dot"></div>
+    <div style="flex:1">
+      <div class="loc-name">${escapeHTML(name)}</div>
+      <div class="loc-desc">${escapeHTML(desc || 'Route stop')}</div>
+    </div>
+    <span class="loc-type">Route</span>
+    <button class="stop-delete-btn" onclick="deleteStop(${idx})">✕ Remove</button>`;
+  list.appendChild(item);
+
+  document.getElementById('admin-stop-name').value = '';
+  document.getElementById('admin-stop-desc').value = '';
+  document.getElementById('admin-stop-lat').value  = '';
+  document.getElementById('admin-stop-lng').value  = '';
+  map.panTo([lat, lng]);
+  showToast(`"${name}" added ✓`);
+}
+
+/* ════════════════════════════════════════
+   WALK BUILDER
+════════════════════════════════════════ */
+let wbPreviewMarkers  = [];
+let wbPreviewPolyline = null;
+
+function openWalkBuilder() {
+  document.getElementById('walk-builder').classList.add('open');
+  wbStops = [];
+  renderWbList();
+  clearWbPreview();
+}
+
+function closeWalkBuilder() {
+  document.getElementById('walk-builder').classList.remove('open');
+}
+
+function discardWalk() {
+  if (wbStops.length > 0) {
+    if (!confirm('Discard this walk? All stops will be lost.')) return;
+  }
+  clearWbPreview();
+  wbStops = [];
+  closeWalkBuilder();
+}
+
+/* Add a stop inside the walk builder */
+function wbAddStop() {
+  const name    = document.getElementById('wb-stop-name').value.trim();
+  const desc    = document.getElementById('wb-stop-desc').value.trim();
+  const lat     = parseFloat(document.getElementById('wb-stop-lat').value);
+  const lng     = parseFloat(document.getElementById('wb-stop-lng').value);
+  const visible = document.getElementById('wb-stop-visible').checked;
+
+  if (!name) { showToast('Please enter a stop name'); return; }
+  if (isNaN(lat) || isNaN(lng)) { showToast('Enter coordinates or tap the map'); return; }
+  if (lat < 55.5 || lat > 55.9 || lng < 12.3 || lng > 12.8) {
+    showToast('Coordinates seem outside Copenhagen'); return;
+  }
+
+  wbStops.push({ name, desc: desc || '', lat, lng, showPin: visible });
+
+  /* clear inputs */
+  document.getElementById('wb-stop-name').value = '';
+  document.getElementById('wb-stop-desc').value = '';
+  document.getElementById('wb-stop-lat').value  = '';
+  document.getElementById('wb-stop-lng').value  = '';
+  document.getElementById('wb-stop-visible').checked = true;
+
+  renderWbList();
+  updateWbPreview();
+  showToast(`Stop ${wbStops.length} added`);
+}
+
+/* Remove a stop from the builder */
+function wbRemoveStop(idx) {
+  wbStops.splice(idx, 1);
+  renderWbList();
+  updateWbPreview();
+}
+
+/* Render the stop list inside the builder panel */
+function renderWbList() {
+  const list = document.getElementById('wb-stop-list');
+  const empty = document.getElementById('wb-empty-msg');
+  const publishBtn = document.getElementById('wb-publish-btn');
+
+  if (wbStops.length === 0) {
+    list.innerHTML = '';
+    list.appendChild(empty);
+    publishBtn.disabled = true;
+    return;
+  }
+
+  publishBtn.disabled = wbStops.length < 1;
+
+  list.innerHTML = wbStops.map((s, i) => `
+    <div class="wb-stop-item ${s.showPin ? '' : 'is-direction'}">
+      <div class="wb-stop-num ${s.showPin ? '' : 'direction-num'}">${i + 1}</div>
+      <div class="wb-stop-info">
+        <div class="wb-stop-name">${escapeHTML(s.name)}</div>
+        <div class="wb-stop-meta">${s.lat.toFixed(4)}, ${s.lng.toFixed(4)}${s.desc ? ' · ' + escapeHTML(s.desc) : ''}</div>
+      </div>
+      <span class="wb-stop-badge ${s.showPin ? 'pin' : 'dir'}">${s.showPin ? 'Pin' : 'Dir'}</span>
+      <button class="wb-remove-btn" onclick="wbRemoveStop(${i})" title="Remove stop">✕</button>
+    </div>`).join('');
+}
+
+/* Update the map preview while building */
+async function updateWbPreview() {
+  clearWbPreview();
+  if (wbStops.length === 0) return;
+
+  /* place preview markers */
+  wbStops.forEach(s => {
+    const icon = s.showPin ? makeYellowIcon() : makeGhostIcon();
+    const m = L.marker([s.lat, s.lng], { icon })
+      .addTo(map)
+      .bindPopup(`<strong>${escapeHTML(s.name)}</strong>${s.desc ? '<br>' + escapeHTML(s.desc) : ''}`);
+    wbPreviewMarkers.push(m);
+  });
+
+  if (wbStops.length < 2) return;
+
+  /* show routing status */
+  const statusBox  = document.getElementById('wb-routing-status');
+  const routingDot = document.getElementById('wb-routing-dot');
+  const routingTxt = document.getElementById('wb-routing-text');
+  statusBox.style.display  = 'flex';
+  routingDot.className     = 'routing-dot loading';
+  routingTxt.textContent   = 'Calculating street route…';
+
+  await fetchStreetRoute(wbStops, function(latlngs) {
+    wbPreviewPolyline = L.polyline(latlngs, {
+      color: '#FFE500', weight: 3, opacity: 0.7, dashArray: '6 6'
+    }).addTo(map);
+    routingDot.className   = 'routing-dot done';
+    routingTxt.textContent = 'Street route calculated ✓';
+  });
+
+  /* pan map to fit all stops */
+  const bounds = L.latLngBounds(wbStops.map(s => [s.lat, s.lng]));
+  map.fitBounds(bounds, { padding: [40, 40] });
+}
+
+/* Clear walk builder map preview */
+function clearWbPreview() {
+  wbPreviewMarkers.forEach(m => map.removeLayer(m));
+  wbPreviewMarkers = [];
+  if (wbPreviewPolyline) { map.removeLayer(wbPreviewPolyline); wbPreviewPolyline = null; }
+  document.getElementById('wb-routing-status').style.display = 'none';
+}
+
+/* Publish — replace active walk with builder walk */
+function publishWalk() {
+  if (wbStops.length === 0) { showToast('Add at least one stop first'); return; }
+
+  const walkName = document.getElementById('wb-walk-name').value.trim();
+  const walkDate = document.getElementById('wb-walk-date').value.trim();
+
+  if (!confirm(`Publish "${walkName || 'New Walk'}"?\nThis will replace the current route on the map.`)) return;
+
+  /* clear current active walk */
+  activeStops.forEach(s => { if (s.marker) map.removeLayer(s.marker); });
+  if (activePolyline) { map.removeLayer(activePolyline); activePolyline = null; }
+
+  /* replace with new walk */
+  activeStops = wbStops.map(s => ({ ...s, marker: null }));
+
+  /* update info section if values provided */
+  if (walkName) document.getElementById('info-route').textContent = walkName;
+  if (walkDate) document.getElementById('info-date').textContent  = walkDate;
+
+  /* render new walk on map */
+  renderActiveWalk();
+
+  /* rebuild location list */
+  const list = document.getElementById('location-list');
+  list.innerHTML = activeStops.map((s, i) => `
+    <div class="loc-item ${s.showPin ? '' : 'hidden-stop'}" data-stop-id="${i}">
+      <div class="loc-dot ${s.showPin ? '' : 'hidden'}"></div>
+      <div style="flex:1">
+        <div class="loc-name">${escapeHTML(s.name)}</div>
+        <div class="loc-desc">${escapeHTML(s.desc || '')}</div>
+      </div>
+      <span class="loc-type ${s.showPin ? '' : 'direction'}">${s.showPin ? 'Stop' : 'Direction'}</span>
+      <button class="stop-delete-btn" onclick="deleteStop(${i})">✕ Remove</button>
+    </div>`).join('');
+
+  /* clean up builder */
+  clearWbPreview();
+  wbStops = [];
+  closeWalkBuilder();
+  showToast(`Walk published ✓`);
+}
+
+/* ════════════════════════════════════════
    ADMIN AUTH
-───────────────────────────────────────── */
+════════════════════════════════════════ */
 const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'admin123'; // change this in a real deployment
+const ADMIN_PASS = 'admin123';
 let isAdmin = false;
 
 function openAdminModal(e) {
   if (e) e.preventDefault();
   document.getElementById('admin-modal').classList.add('open');
-  document.getElementById('admin-user-input').focus();
+  setTimeout(() => document.getElementById('admin-user-input').focus(), 300);
   document.getElementById('modal-error').textContent = '';
 }
-
 function closeAdminModal() {
   document.getElementById('admin-modal').classList.remove('open');
   document.getElementById('admin-pass-input').value = '';
   document.getElementById('modal-error').textContent = '';
 }
-
 function attemptAdminLogin() {
   const user = document.getElementById('admin-user-input').value.trim();
   const pass = document.getElementById('admin-pass-input').value;
   if (user === ADMIN_USER && pass === ADMIN_PASS) {
     isAdmin = true;
     closeAdminModal();
-    // Show admin UI
     document.getElementById('admin-panel').classList.add('visible');
     document.getElementById('admin-nav-actions').style.display = 'flex';
     document.getElementById('admin-login-link').style.display = 'none';
+    document.getElementById('rsvp-admin-panel').style.display = 'block';
+    document.body.classList.add('admin-mode');
     showToast('Welcome back, admin ✓');
   } else {
     document.getElementById('modal-error').textContent = 'Incorrect username or password.';
@@ -1149,191 +1570,75 @@ function attemptAdminLogin() {
     document.getElementById('admin-pass-input').focus();
   }
 }
-
 function adminLogout() {
   isAdmin = false;
   document.getElementById('admin-panel').classList.remove('visible');
   document.getElementById('admin-nav-actions').style.display = 'none';
   document.getElementById('admin-login-link').style.display = 'block';
+  document.getElementById('rsvp-admin-panel').style.display = 'none';
+  document.body.classList.remove('admin-mode');
+  closeNav();
   showToast('Logged out');
 }
-
-// Close modal on backdrop click
 document.getElementById('admin-modal').addEventListener('click', function(e) {
   if (e.target === this) closeAdminModal();
 });
-
-// Close modal on Escape
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeAdminModal();
+  if (e.key === 'Escape') { closeAdminModal(); closeWalkBuilder(); }
 });
 
-/* ─────────────────────────────────────────
-   MAP SETUP  (fixed bindPopup syntax)
-───────────────────────────────────────── */
-const routeStops = [
-  { name: "Nørreport Station",   lat: 55.6833, lng: 12.5714, desc: "Meetup point" },
-  { name: "Assistens Kirkegård", lat: 55.6882, lng: 12.5540, desc: "Great light, old stones" },
-  { name: "Ravnsborggade",       lat: 55.6902, lng: 12.5531, desc: "Street life & colour" },
-  { name: "Blågårds Plads",      lat: 55.6898, lng: 12.5481, desc: "Final stop — coffee" }
-];
-
-const map = L.map('map').setView([55.686, 12.562], 14);
-
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  attribution: '© OpenStreetMap © CARTO',
-  maxZoom: 19
-}).addTo(map);
-
-/* Icon factories */
-function makeIcon(color) {
-  return L.divIcon({
-    className: '',
-    html: `<div style="width:14px;height:14px;background:${color};border-radius:50%;
-                border:2px solid #0A0A0A;box-shadow:0 0 0 2px ${color};"></div>`,
-    iconSize: [14, 14],
-    iconAnchor: [7, 7]
-  });
+/* ════════════════════════════════════════
+   NAV
+════════════════════════════════════════ */
+function toggleNav() {
+  const links  = document.getElementById('nav-links');
+  const burger = document.getElementById('hamburger');
+  links.classList.toggle('open');
+  burger.classList.toggle('open');
+  burger.setAttribute('aria-label', links.classList.contains('open') ? 'Close menu' : 'Open menu');
 }
-const yellowIcon = makeIcon('#FFE500');
-const cyanIcon   = makeIcon('#00C9D4');
-
-/* Draw initial route polyline — we'll update it when admin adds stops */
-const latLngs = routeStops.map(s => [s.lat, s.lng]);
-const routePolyline = L.polyline(latLngs, {
-  color: '#FFE500', weight: 2, opacity: 0.5, dashArray: '6 6'
-}).addTo(map);
-
-/* Place initial markers */
-routeStops.forEach(s => {
-  L.marker([s.lat, s.lng], { icon: yellowIcon })
-   .addTo(map)
-   .bindPopup(`<strong>${s.name}</strong><br>${s.desc}`);
+function closeNav() {
+  document.getElementById('nav-links').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  if (!document.querySelector('nav').contains(e.target)) closeNav();
 });
 
-/* Click on map → fill lat/lng into admin fields */
-map.on('click', function(e) {
-  if (!isAdmin) return;
-  document.getElementById('admin-stop-lat').value = e.latlng.lat.toFixed(5);
-  document.getElementById('admin-stop-lng').value = e.latlng.lng.toFixed(5);
-  showToast('Coordinates filled — add a name & save');
-});
-
-/* ─────────────────────────────────────────
-   ADMIN — ADD ROUTE STOP
-───────────────────────────────────────── */
-function adminAddStop() {
-  if (!isAdmin) return;
-
-  const name = document.getElementById('admin-stop-name').value.trim();
-  const desc = document.getElementById('admin-stop-desc').value.trim();
-  const lat  = parseFloat(document.getElementById('admin-stop-lat').value);
-  const lng  = parseFloat(document.getElementById('admin-stop-lng').value);
-
-  if (!name) {
-    showToast('Please enter a stop name');
-    return;
+/* ════════════════════════════════════════
+   FACEBOOK EVENT LINK
+════════════════════════════════════════ */
+function saveFbLink() {
+  const input = document.getElementById('fb-link-input').value.trim();
+  if (!input) { showToast('Please paste a Facebook event URL'); return; }
+  if (!input.startsWith('https://www.facebook.com/events/')) {
+    showToast('That doesn\'t look like a Facebook event link'); return;
   }
-  if (isNaN(lat) || isNaN(lng)) {
-    showToast('Please enter valid coordinates (or click the map)');
-    return;
-  }
-  if (lat < 55.5 || lat > 55.9 || lng < 12.3 || lng > 12.8) {
-    showToast('Coordinates seem outside Copenhagen — double-check them');
-    return;
-  }
-
-  // Add to routeStops data array
-  routeStops.push({ name, lat, lng, desc: desc || 'Admin-added stop' });
-
-  // Place marker on map
-  L.marker([lat, lng], { icon: yellowIcon })
-   .addTo(map)
-   .bindPopup(`<strong>${name}</strong><br>${desc || 'Admin-added stop'}`);
-
-  // Extend the route polyline
-  routePolyline.addLatLng([lat, lng]);
-
-  // Add to the visible location list
-  const list = document.getElementById('location-list');
-  const item = document.createElement('div');
-  item.className = 'loc-item';
-  item.innerHTML = `
-    <div class="loc-dot admin-stop"></div>
-    <div style="flex:1">
-      <div class="loc-name">${escapeHTML(name)}</div>
-      <div class="loc-desc">${escapeHTML(desc || 'Admin-added stop')}</div>
-    </div>
-    <span class="loc-type route">Route</span>
-  `;
-  list.appendChild(item);
-
-  // Clear admin fields
-  document.getElementById('admin-stop-name').value = '';
-  document.getElementById('admin-stop-desc').value = '';
-  document.getElementById('admin-stop-lat').value  = '';
-  document.getElementById('admin-stop-lng').value  = '';
-
-  // Pan map to new stop
-  map.panTo([lat, lng]);
-
-  showToast(`"${name}" added to the route ✓`);
+  document.getElementById('fb-event-link').href = input;
+  document.getElementById('fb-event-link-box').style.display = 'block';
+  showToast('Facebook event link saved ✓');
+}
+function removeFbLink() {
+  document.getElementById('fb-event-link').href = '#';
+  document.getElementById('fb-event-link-box').style.display = 'none';
+  document.getElementById('fb-link-input').value = '';
+  showToast('Event link removed');
 }
 
-/* ─────────────────────────────────────────
-   PUBLIC — SUGGEST A SPOT (cyan markers)
-───────────────────────────────────────── */
-function addLocation() {
-  const name = document.getElementById('loc-name-input').value.trim();
-  const desc = document.getElementById('loc-desc-input').value.trim();
-  if (!name) { showToast('Please enter a location name'); return; }
-
-  const jitter = () => (Math.random() - 0.5) * 0.012;
-  const lat = 55.686 + jitter();
-  const lng = 12.562 + jitter();
-
-  L.marker([lat, lng], { icon: cyanIcon })
-   .addTo(map)
-   .bindPopup(`<strong>${escapeHTML(name)}</strong><br>${escapeHTML(desc || 'Member suggestion')}`);
-
-  const list = document.getElementById('location-list');
-  const item = document.createElement('div');
-  item.className = 'loc-item';
-  item.innerHTML = `
-    <div class="loc-dot user"></div>
-    <div style="flex:1">
-      <div class="loc-name">${escapeHTML(name)}</div>
-      <div class="loc-desc">${escapeHTML(desc || 'Member suggestion')}</div>
-    </div>
-    <span class="loc-type suggested">Suggested</span>
-  `;
-  list.appendChild(item);
-
-  document.getElementById('loc-name-input').value = '';
-  document.getElementById('loc-desc-input').value = '';
-  showToast('Spot added — thanks!');
-}
-
-/* ─────────────────────────────────────────
-   LOCATION SHARING  (fixed REFRESH_MS)
-───────────────────────────────────────── */
+/* ════════════════════════════════════════
+   LOCATION SHARING
+════════════════════════════════════════ */
 let currentLat = null, currentLng = null;
-let refreshInterval = null;
-let countdownInterval = null;
-const REFRESH_MS = 2 * 60 * 1000; // 2 minutes — fixed from "2 _60_ 1000"
+let refreshInterval = null, countdownInterval = null;
+const REFRESH_MS = 2 * 60 * 1000;
 
 function startSharing() {
   const btn = document.getElementById('share-btn');
   btn.textContent = 'Getting location…';
   btn.disabled = true;
-
   if (!navigator.geolocation) {
-    showToast('Geolocation not supported on this browser');
-    btn.textContent = 'Start auto-sharing';
-    btn.disabled = false;
-    return;
+    showToast('Geolocation not supported'); btn.textContent = 'Start auto-sharing'; btn.disabled = false; return;
   }
-
   fetchLocation(() => {
     btn.style.display = 'none';
     document.getElementById('stop-btn').style.display = 'block';
@@ -1347,60 +1652,45 @@ function startSharing() {
     startCountdown();
   });
 }
-
 function fetchLocation(onSuccess) {
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       currentLat = pos.coords.latitude.toFixed(5);
       currentLng = pos.coords.longitude.toFixed(5);
-      const now = new Date();
-      const timeStr = now.toLocaleTime
-      const timeStr = now.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const timeStr = new Date().toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       document.getElementById('timestamp').textContent = 'Updated ' + timeStr;
       document.getElementById('coords-text').textContent = currentLat + ', ' + currentLng;
-      const mapsLink = 'https://www.google.com/maps?q=' + currentLat + ',' + currentLng;
-      document.getElementById('share-link').value = mapsLink;
+      document.getElementById('share-link').value = 'https://www.google.com/maps?q=' + currentLat + ',' + currentLng;
       startCountdown();
       if (onSuccess) onSuccess();
     },
     () => {
       showToast('Could not get location — check browser permissions');
       const btn = document.getElementById('share-btn');
-      btn.textContent = 'Start auto-sharing';
-      btn.disabled = false;
+      btn.textContent = 'Start auto-sharing'; btn.disabled = false;
     },
     { enableHighAccuracy: true, timeout: 10000 }
   );
 }
-
 function startCountdown() {
   clearInterval(countdownInterval);
   const bar = document.getElementById('refresh-bar');
   const label = document.getElementById('next-refresh');
   const start = Date.now();
-  bar.style.transition = 'none';
   bar.style.width = '100%';
   countdownInterval = setInterval(() => {
-    const elapsed = Date.now() - start;
-    const remaining = Math.max(0, REFRESH_MS - elapsed);
-    const pct = (remaining / REFRESH_MS * 100).toFixed(1);
+    const remaining = Math.max(0, REFRESH_MS - (Date.now() - start));
     const secs = Math.ceil(remaining / 1000);
-    bar.style.width = pct + '%';
+    bar.style.width = (remaining / REFRESH_MS * 100).toFixed(1) + '%';
     label.textContent = 'Next update in ' + (secs >= 60 ? Math.ceil(secs / 60) + ' min' : secs + 's');
     if (remaining <= 0) clearInterval(countdownInterval);
   }, 500);
 }
-
 function stopSharing() {
-  clearInterval(refreshInterval);
-  clearInterval(countdownInterval);
-  refreshInterval = null;
-  currentLat = null;
-  currentLng = null;
+  clearInterval(refreshInterval); clearInterval(countdownInterval);
+  refreshInterval = null; currentLat = null; currentLng = null;
   const btn = document.getElementById('share-btn');
-  btn.textContent = 'Start auto-sharing';
-  btn.disabled = false;
-  btn.style.display = 'block';
+  btn.textContent = 'Start auto-sharing'; btn.disabled = false; btn.style.display = 'block';
   document.getElementById('stop-btn').style.display = 'none';
   document.getElementById('link-box').style.display = 'none';
   document.getElementById('coords-display').style.display = 'none';
@@ -1410,63 +1700,36 @@ function stopSharing() {
   document.getElementById('refresh-bar').style.width = '100%';
   document.getElementById('next-refresh').textContent = '';
 }
-
 function copyLink() {
-  const link = document.getElementById('share-link').value;
-  navigator.clipboard.writeText(link).then(() => showToast('Link copied — paste it in the group chat!'));
+  navigator.clipboard.writeText(document.getElementById('share-link').value)
+    .then(() => showToast('Link copied!'))
+    .catch(() => showToast('Copy failed — select the link manually'));
 }
-
 function nativeShare() {
   if (!currentLat) return;
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });
+  const timeStr  = new Date().toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });
   const mapsLink = 'https://www.google.com/maps?q=' + currentLat + ',' + currentLng;
-  const text = '📍 Find us here (as of ' + timeStr + '): ' + mapsLink;
+  const text     = '📍 Find us here (as of ' + timeStr + '): ' + mapsLink;
   if (navigator.share) {
-    navigator.share({ text: text }).catch(() => {});
+    navigator.share({ text }).catch(err => { if (err.name !== 'AbortError') copyLink(); });
   } else {
-    navigator.clipboard.writeText(text).then(() => showToast('Copied — paste it in your group chat'));
+    navigator.clipboard.writeText(text).then(() => showToast('Copied!'));
   }
 }
 
-/* ─────────────────────────────────────────
-   RSVP  (fixed — was orphaned before)
-───────────────────────────────────────── */
-function submitRSVP() {
-  const name  = document.getElementById('rsvp-name').value.trim();
-  const email = document.getElementById('rsvp-email').value.trim();
-  if (!name || !email) {
-    showToast('Please fill in your name and email');
-    return;
-  }
-  if (!email.includes('@')) {
-    showToast('Please enter a valid email address');
-    return;
-  }
-  showToast('See you on the walk! ✓');
-  document.getElementById('rsvp-name').value  = '';
-  document.getElementById('rsvp-email').value = '';
-  document.getElementById('rsvp-gear').value  = '';
-}
-
-/* ─────────────────────────────────────────
+/* ════════════════════════════════════════
    UTILITIES
-───────────────────────────────────────── */
+════════════════════════════════════════ */
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
 }
-
-// Prevent XSS in dynamic HTML insertions
 function escapeHTML(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 </script>
 </body>
