@@ -14,247 +14,551 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --black:  #0A0A0A;
-  --yellow: #FFE500;
-  --coral:  #FF4B2B;
-  --cyan:   #00C9D4;
-  --white:  #F5F0E8;
-  --mid:    #1A1A1A;
+  --bg:      #F7F4EF;
+  --white:   #FFFFFF;
+  --black:   #1A1A2E;
+  --yellow:  #F5A623;
+  --coral:   #E8523A;
+  --teal:    #2A9D8F;
+  --blue:    #3A7BD5;
+  --light:   #EEF2F7;
+  --border:  #DDE3EC;
+  --text:    #2C3E50;
+  --muted:   #7F8C9A;
   --font-display: 'Anton', sans-serif;
   --font-body:    'DM Sans', sans-serif;
   --font-mono:    'DM Mono', monospace;
   --tap: 48px;
+  --radius: 10px;
+  --shadow: 0 4px 20px rgba(44,62,80,0.10);
+  --shadow-lg: 0 12px 40px rgba(44,62,80,0.16);
 }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   font-family: var(--font-body);
-  background: var(--black);
-  color: var(--white);
+  background: var(--bg);
+  color: var(--text);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
+
+/* ── NAV ── */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 999;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 1.25rem; height: 56px;
-  background: rgba(10,10,10,0.96);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(255,229,0,0.15);
+  padding: 0 2rem; height: 60px;
+  background: var(--white);
+  box-shadow: 0 2px 12px rgba(44,62,80,0.08);
+  border-bottom: 2px solid var(--yellow);
 }
-.nav-logo { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.12em; color: var(--yellow); text-transform: uppercase; flex-shrink: 0; }
-.nav-hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; background: none; border: none; cursor: pointer; padding: 6px; width: var(--tap); height: var(--tap); align-items: center; }
-.nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--white); border-radius: 2px; transition: all 0.25s; }
+.nav-logo {
+  font-family: var(--font-mono); font-size: 0.85rem;
+  letter-spacing: 0.12em; color: var(--coral);
+  text-transform: uppercase; flex-shrink: 0; font-weight: 500;
+}
+.nav-hamburger {
+  display: none; flex-direction: column; justify-content: center;
+  gap: 5px; background: none; border: none; cursor: pointer;
+  padding: 6px; width: var(--tap); height: var(--tap); align-items: center;
+}
+.nav-hamburger span {
+  display: block; width: 22px; height: 2px;
+  background: var(--text); border-radius: 2px; transition: all 0.25s;
+}
 .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .nav-hamburger.open span:nth-child(2) { opacity: 0; }
 .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-.nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
-.nav-links a { text-decoration: none; color: var(--white); font-size: 0.85rem; font-weight: 300; letter-spacing: 0.05em; transition: color 0.2s; display: flex; align-items: center; height: var(--tap); }
-.nav-links a:hover { color: var(--yellow); }
-.admin-badge { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--yellow); color: var(--black); padding: 0.2rem 0.55rem; border-radius: 2px; }
+.nav-links { display: flex; gap: 0.5rem; list-style: none; align-items: center; }
+.nav-links a {
+  text-decoration: none; color: var(--text); font-size: 0.88rem;
+  font-weight: 400; letter-spacing: 0.02em; transition: all 0.2s;
+  display: flex; align-items: center; height: var(--tap);
+  padding: 0 0.75rem; border-radius: 6px;
+}
+.nav-links a:hover { color: var(--coral); background: rgba(232,82,58,0.07); }
+.admin-badge {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: var(--teal); color: var(--white);
+  padding: 0.2rem 0.55rem; border-radius: 20px; font-weight: 500;
+}
 #admin-nav-actions { display: none; align-items: center; gap: 0.75rem; }
-#logout-btn { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; background: transparent; color: rgba(245,240,232,0.4); border: 1px solid rgba(245,240,232,0.2); padding: 0.25rem 0.6rem; cursor: pointer; border-radius: 2px; transition: all 0.2s; min-height: 32px; }
+#logout-btn {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.75rem; cursor: pointer;
+  border-radius: 20px; transition: all 0.2s; min-height: 30px;
+}
 #logout-btn:hover { color: var(--coral); border-color: var(--coral); }
+
 @media (max-width: 768px) {
   .nav-hamburger { display: flex; }
-  .nav-links { position: fixed; top: 56px; left: 0; right: 0; background: rgba(10,10,10,0.98); backdrop-filter: blur(12px); flex-direction: column; gap: 0; padding: 0.5rem 0 1rem; border-bottom: 1px solid rgba(255,229,0,0.15); transform: translateY(-120%); transition: transform 0.3s ease; z-index: 998; }
+  .nav-links {
+    position: fixed; top: 60px; left: 0; right: 0;
+    background: var(--white); flex-direction: column; gap: 0;
+    padding: 0.5rem 0 1rem;
+    box-shadow: 0 8px 24px rgba(44,62,80,0.12);
+    transform: translateY(-120%); transition: transform 0.3s ease; z-index: 998;
+  }
   .nav-links.open { transform: translateY(0); }
   .nav-links li { width: 100%; }
-  .nav-links a { display: flex; align-items: center; padding: 0 1.5rem; font-size: 1rem; height: 52px; border-bottom: 1px solid rgba(255,229,0,0.07); }
-  #admin-login-link a { color: rgba(245,240,232,0.4) !important; }
+  .nav-links a {
+    padding: 0 1.5rem; font-size: 1rem; height: 52px;
+    border-radius: 0; border-bottom: 1px solid var(--border);
+  }
+  #admin-login-link a { color: var(--muted) !important; }
   #admin-nav-actions { padding: 0.75rem 1.5rem; flex-direction: row; flex-wrap: wrap; gap: 0.6rem; }
 }
-.hero { min-height: 100svh; display: grid; grid-template-columns: 1fr 1fr; position: relative; overflow: hidden; padding-top: 56px; }
-.hero-left { background: var(--yellow); display: flex; flex-direction: column; justify-content: flex-end; padding: 3rem 2.5rem; position: relative; }
-.hero-eyebrow { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.18em; color: var(--black); text-transform: uppercase; margin-bottom: 0.75rem; }
-.hero-title { font-family: var(--font-display); font-size: clamp(3rem,7vw,7.5rem); line-height: 0.92; color: var(--black); text-transform: uppercase; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100svh; display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative; overflow: hidden; padding-top: 60px;
+}
+.hero-left {
+  background: linear-gradient(135deg, var(--coral) 0%, #C0392B 100%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 3rem 2.5rem; position: relative;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  letter-spacing: 0.18em; color: rgba(255,255,255,0.75);
+  text-transform: uppercase; margin-bottom: 0.75rem;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem,7vw,7.5rem);
+  line-height: 0.92; color: var(--white); text-transform: uppercase;
+}
 .hero-title span { display: block; }
-.hero-tag { margin-top: 1.5rem; display: inline-block; background: var(--black); color: var(--yellow); font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.14em; padding: 0.4rem 0.8rem; text-transform: uppercase; }
-.hero-right { background: var(--black); display: flex; flex-direction: column; justify-content: center; padding: 3rem 2.5rem; border-left: 3px solid var(--yellow); }
-.hero-desc { font-size: 1.1rem; font-weight: 300; line-height: 1.7; color: var(--white); max-width: 400px; margin-bottom: 2rem; }
+.hero-tag {
+  margin-top: 1.5rem; display: inline-block;
+  background: rgba(255,255,255,0.2); color: var(--white);
+  font-family: var(--font-mono); font-size: 0.68rem;
+  letter-spacing: 0.14em; padding: 0.4rem 0.9rem;
+  text-transform: uppercase; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.35);
+}
+.hero-right {
+  background: var(--white); display: flex;
+  flex-direction: column; justify-content: center;
+  padding: 3rem 2.5rem;
+}
+.hero-desc {
+  font-size: 1.1rem; font-weight: 300; line-height: 1.75;
+  color: var(--text); max-width: 400px; margin-bottom: 2rem;
+}
 .hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-.hero-stat { display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap; }
-.stat-block .num { font-family: var(--font-display); font-size: 2.5rem; color: var(--coral); line-height: 1; }
-.stat-block .lbl { font-size: 0.7rem; font-family: var(--font-mono); letter-spacing: 0.1em; color: rgba(245,240,232,0.5); text-transform: uppercase; margin-top: 0.2rem; }
-.film-strip { position: absolute; top: 0; right: -40px; width: 80px; height: 100%; background: var(--black); display: flex; flex-direction: column; justify-content: space-around; padding: 2rem 0; }
-.film-hole { width: 18px; height: 12px; background: var(--yellow); border-radius: 2px; margin: 0 auto; opacity: 0.6; }
-.btn { display: inline-flex; align-items: center; justify-content: center; min-height: var(--tap); padding: 0.75rem 1.5rem; font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; cursor: pointer; border: none; border-radius: 2px; transition: all 0.2s; white-space: nowrap; }
-.btn-yellow { background: var(--yellow); color: var(--black); }
-.btn-yellow:hover { background: #FFD000; }
-.btn-outline { background: transparent; color: var(--white); border: 1px solid rgba(245,240,232,0.3); }
-.btn-outline:hover { border-color: var(--yellow); color: var(--yellow); }
-.btn-dark { background: var(--black); color: var(--yellow); }
-.btn-dark:hover { background: #222; }
-.section-label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--yellow); margin-bottom: 0.6rem; }
-.section-title { font-family: var(--font-display); font-size: clamp(2.2rem,6vw,4rem); line-height: 1; text-transform: uppercase; }
-.next-walk { background: var(--coral); padding: 4rem 0; overflow: hidden; position: relative; }
-.next-walk-inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
-.next-walk .section-label { color: rgba(10,10,10,0.6); }
-.next-walk .section-title { color: var(--black); }
-.walk-meta { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
-.meta-row { display: flex; align-items: baseline; gap: 0.75rem; border-top: 1px solid rgba(10,10,10,0.2); padding-top: 0.75rem; }
-.meta-key { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(10,10,10,0.55); min-width: 80px; flex-shrink: 0; }
-.meta-val { font-size: 0.95rem; font-weight: 500; color: var(--black); }
-.walk-desc-block { color: var(--black); }
-.walk-desc-block p { font-size: 1rem; font-weight: 300; line-height: 1.75; margin-bottom: 1.25rem; opacity: 0.85; }
-.big-date { font-family: var(--font-display); font-size: clamp(4rem,12vw,11rem); line-height: 0.85; color: rgba(10,10,10,0.12); position: absolute; right: 1rem; bottom: 1rem; pointer-events: none; white-space: nowrap; }
-.route-section { background: var(--mid); padding: 4rem 0; }
-.route-inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
-.route-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap; }
-#map { width: 100%; height: 420px; border: 2px solid rgba(255,229,0,0.2); border-radius: 4px; touch-action: pan-y; }
-.db-status { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,240,232,0.3); margin-bottom: 0.5rem; }
-.db-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(245,240,232,0.2); flex-shrink: 0; transition: background 0.3s; }
-.db-dot.live { background: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,0.15); }
+.hero-stat { display: flex; gap: 2rem; margin-top: 2.5rem; flex-wrap: wrap; }
+.stat-block .num {
+  font-family: var(--font-display); font-size: 2.5rem;
+  color: var(--coral); line-height: 1;
+}
+.stat-block .lbl {
+  font-size: 0.72rem; font-family: var(--font-mono);
+  letter-spacing: 0.1em; color: var(--muted);
+  text-transform: uppercase; margin-top: 0.2rem;
+}
+.film-strip {
+  position: absolute; top: 0; right: -40px;
+  width: 80px; height: 100%; background: rgba(0,0,0,0.15);
+  display: flex; flex-direction: column;
+  justify-content: space-around; padding: 2rem 0;
+}
+.film-hole {
+  width: 18px; height: 12px; background: rgba(255,255,255,0.3);
+  border-radius: 2px; margin: 0 auto;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--tap); padding: 0.75rem 1.5rem;
+  font-family: var(--font-mono); font-size: 0.8rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  text-decoration: none; cursor: pointer; border: none;
+  border-radius: 8px; transition: all 0.2s; white-space: nowrap; font-weight: 500;
+}
+.btn-coral { background: var(--coral); color: var(--white); box-shadow: 0 4px 12px rgba(232,82,58,0.3); }
+.btn-coral:hover { background: #C0392B; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(232,82,58,0.35); }
+.btn-outline {
+  background: transparent; color: var(--text);
+  border: 2px solid var(--border);
+}
+.btn-outline:hover { border-color: var(--coral); color: var(--coral); background: rgba(232,82,58,0.05); }
+.btn-dark { background: var(--text); color: var(--white); }
+.btn-dark:hover { background: #34495E; }
+.btn-teal { background: var(--teal); color: var(--white); box-shadow: 0 4px 12px rgba(42,157,143,0.3); }
+.btn-teal:hover { background: #238378; transform: translateY(-1px); }
+.btn-yellow-solid { background: var(--yellow); color: var(--white); box-shadow: 0 4px 12px rgba(245,166,35,0.3); }
+.btn-yellow-solid:hover { background: #E09415; }
+
+/* ── SECTION SHARED ── */
+.section-label {
+  font-family: var(--font-mono); font-size: 0.7rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--coral); margin-bottom: 0.5rem; font-weight: 500;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem,5vw,3.5rem);
+  line-height: 1; text-transform: uppercase; color: var(--text);
+}
+
+/* ── NEXT WALK ── */
+.next-walk {
+  background: var(--white); padding: 5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.next-walk-inner {
+  max-width: 1100px; margin: 0 auto; padding: 0 2rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
+}
+.walk-meta { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0; }
+.meta-row {
+  display: flex; align-items: center; gap: 1rem;
+  border-bottom: 1px solid var(--border); padding: 0.9rem 0;
+}
+.meta-row:first-child { border-top: 1px solid var(--border); }
+.meta-key {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--muted); min-width: 80px; flex-shrink: 0;
+}
+.meta-val { font-size: 0.95rem; font-weight: 500; color: var(--text); }
+.walk-desc-block p {
+  font-size: 1rem; font-weight: 300; line-height: 1.8;
+  margin-bottom: 1.25rem; color: var(--muted);
+}
+.big-date {
+  font-family: var(--font-display);
+  font-size: clamp(4rem,10vw,9rem); line-height: 1;
+  color: rgba(232,82,58,0.07); pointer-events: none;
+  margin-top: 1rem; display: block;
+}
+
+/* ── ROUTE MAP ── */
+.route-section { background: var(--light); padding: 5rem 0; }
+.route-inner { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+.route-header {
+  display: flex; justify-content: space-between;
+  align-items: flex-end; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;
+}
+#map {
+  width: 100%; height: 440px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.db-status {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-mono); font-size: 0.65rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+}
+.db-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); flex-shrink: 0; transition: background 0.3s; }
+.db-dot.live { background: #2ECC71; box-shadow: 0 0 0 3px rgba(46,204,113,0.2); }
 .location-list { margin-top: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
-.loc-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.85rem 1rem; background: rgba(255,229,0,0.06); border: 1px solid rgba(255,229,0,0.15); border-radius: 2px; min-height: var(--tap); transition: background 0.2s; }
-.loc-item.hidden-stop { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); }
-.loc-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--yellow); flex-shrink: 0; }
-.loc-dot.hidden { background: rgba(245,240,232,0.25); }
-.loc-name { font-size: 0.9rem; font-weight: 500; flex: 1; }
-.loc-desc { font-size: 0.75rem; color: rgba(245,240,232,0.5); font-family: var(--font-mono); margin-top: 0.1rem; }
-.loc-type { font-size: 0.6rem; font-family: var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 2px; flex-shrink: 0; background: rgba(255,229,0,0.15); color: var(--yellow); }
-.loc-type.direction { background: rgba(245,240,232,0.08); color: rgba(245,240,232,0.4); }
-.stop-delete-btn { display: none; background: transparent; border: 1px solid rgba(255,75,43,0.3); color: var(--coral); cursor: pointer; border-radius: 2px; padding: 0.2rem 0.5rem; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; transition: all 0.2s; flex-shrink: 0; min-height: 28px; }
-.stop-delete-btn:hover { background: var(--coral); color: var(--white); }
+.loc-item {
+  display: flex; align-items: center; gap: 0.85rem;
+  padding: 0.9rem 1.1rem; background: var(--white);
+  border: 1px solid var(--border); border-radius: 8px;
+  min-height: var(--tap); transition: all 0.2s; box-shadow: 0 1px 4px rgba(44,62,80,0.05);
+}
+.loc-item:hover { border-color: var(--coral); box-shadow: 0 2px 8px rgba(232,82,58,0.1); }
+.loc-item.hidden-stop { background: var(--light); }
+.loc-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--coral); flex-shrink: 0; }
+.loc-dot.hidden { background: var(--border); }
+.loc-name { font-size: 0.9rem; font-weight: 500; flex: 1; color: var(--text); }
+.loc-desc { font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono); margin-top: 0.1rem; }
+.loc-type {
+  font-size: 0.6rem; font-family: var(--font-mono);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.2rem 0.6rem; border-radius: 20px; flex-shrink: 0;
+  background: rgba(232,82,58,0.1); color: var(--coral); font-weight: 500;
+}
+.loc-type.direction { background: var(--light); color: var(--muted); }
+.stop-delete-btn {
+  display: none; background: transparent;
+  border: 1px solid rgba(232,82,58,0.3); color: var(--coral);
+  cursor: pointer; border-radius: 6px; padding: 0.2rem 0.6rem;
+  font-family: var(--font-mono); font-size: 0.6rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  transition: all 0.2s; flex-shrink: 0; min-height: 28px;
+}
+.stop-delete-btn:hover { background: var(--coral); color: var(--white); border-color: var(--coral); }
 body.admin-mode .stop-delete-btn { display: flex; align-items: center; }
-#admin-panel { display: none; margin-top: 2rem; background: rgba(255,229,0,0.04); border: 1px solid rgba(255,229,0,0.35); border-radius: 4px; padding: 1.25rem; }
+
+/* ── ADMIN PANEL ── */
+#admin-panel {
+  display: none; margin-top: 2rem;
+  background: var(--white); border: 2px solid var(--teal);
+  border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow);
+}
 #admin-panel.visible { display: block; }
-.admin-panel-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,229,0,0.15); flex-wrap: wrap; }
-.admin-panel-header h3 { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--yellow); flex: 1; }
+.admin-panel-header {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin-bottom: 1.25rem; padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.admin-panel-header h3 {
+  font-family: var(--font-mono); font-size: 0.8rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--teal); flex: 1;
+}
 .admin-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 .admin-controls .span-2 { grid-column: span 2; }
-.admin-controls label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,229,0,0.6); display: block; margin-bottom: 0.35rem; }
-.admin-controls input { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,229,0,0.3); color: var(--white); padding: 0.7rem 0.9rem; font-family: var(--font-body); font-size: 1rem; border-radius: 2px; outline: none; transition: border-color 0.2s; min-height: var(--tap); }
-.admin-controls input:focus { border-color: var(--yellow); }
-.btn-admin { background: var(--yellow); color: var(--black); border: none; padding: 0.75rem 1rem; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: background 0.2s; min-height: var(--tap); width: 100%; }
-.btn-admin:hover { background: #FFD000; }
-.admin-tip { margin-top: 0.75rem; font-family: var(--font-mono); font-size: 0.62rem; color: rgba(255,229,0,0.4); letter-spacing: 0.07em; line-height: 1.5; }
+.admin-controls label {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); display: block; margin-bottom: 0.35rem;
+}
+.admin-controls input {
+  width: 100%; background: var(--light);
+  border: 1.5px solid var(--border); color: var(--text);
+  padding: 0.7rem 0.9rem; font-family: var(--font-body); font-size: 0.95rem;
+  border-radius: 8px; outline: none; transition: border-color 0.2s; min-height: var(--tap);
+}
+.admin-controls input:focus { border-color: var(--teal); background: var(--white); }
+.btn-admin {
+  background: var(--teal); color: var(--white); border: none;
+  padding: 0.75rem 1rem; font-family: var(--font-mono); font-size: 0.75rem;
+  letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+  border-radius: 8px; transition: all 0.2s; min-height: var(--tap); width: 100%;
+  font-weight: 500;
+}
+.btn-admin:hover { background: #238378; transform: translateY(-1px); }
+.admin-tip {
+  margin-top: 0.75rem; font-family: var(--font-mono); font-size: 0.62rem;
+  color: var(--muted); letter-spacing: 0.07em; line-height: 1.6;
+}
+
+/* ── AUTOCOMPLETE ── */
 .autocomplete-wrap { position: relative; }
-.autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; z-index: 5000; background: #111; border: 1px solid rgba(255,229,0,0.35); border-top: none; border-radius: 0 0 6px 6px; max-height: 240px; overflow-y: auto; box-shadow: 0 12px 32px rgba(0,0,0,0.5); display: none; }
-.autocomplete-item { padding: 0.7rem 1rem; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.15s; }
+.autocomplete-list {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 5000;
+  background: var(--white); border: 1.5px solid var(--border);
+  border-top: none; border-radius: 0 0 10px 10px;
+  max-height: 240px; overflow-y: auto;
+  box-shadow: var(--shadow-lg); display: none;
+}
+.autocomplete-item {
+  padding: 0.75rem 1rem; cursor: pointer;
+  border-bottom: 1px solid var(--border); transition: background 0.12s;
+}
 .autocomplete-item:last-child { border-bottom: none; }
-.autocomplete-item:hover, .autocomplete-item.hover { background: rgba(255,229,0,0.1); }
-.autocomplete-name { font-size: 0.88rem; color: var(--white); font-weight: 500; margin-bottom: 0.15rem; }
-.autocomplete-addr { font-size: 0.68rem; color: rgba(245,240,232,0.4); font-family: var(--font-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.autocomplete-msg { padding: 0.7rem 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: rgba(245,240,232,0.3); letter-spacing: 0.08em; }
-.cal-backdrop { position: fixed; inset: 0; z-index: 7000; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; }
+.autocomplete-item:hover, .autocomplete-item.hover { background: rgba(232,82,58,0.06); }
+.autocomplete-name { font-size: 0.88rem; color: var(--text); font-weight: 500; margin-bottom: 0.1rem; }
+.autocomplete-addr { font-size: 0.68rem; color: var(--muted); font-family: var(--font-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.autocomplete-msg { padding: 0.75rem 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); }
+
+/* ── CALENDAR ── */
+.cal-backdrop {
+  position: fixed; inset: 0; z-index: 7000;
+  background: rgba(44,62,80,0.25); backdrop-filter: blur(2px);
+  display: none;
+}
 .cal-backdrop.open { display: block; }
-.cal-wrap { position: absolute; background: var(--mid); border: 1px solid rgba(255,229,0,0.35); border-radius: 10px; padding: 1.25rem; width: 300px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); z-index: 7001; }
-.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-.cal-month-label { font-family: var(--font-display); font-size: 1.1rem; color: var(--yellow); text-transform: uppercase; letter-spacing: 0.05em; }
-.cal-nav { background: none; border: none; cursor: pointer; color: rgba(245,240,232,0.5); font-size: 1.4rem; width: 36px; height: 36px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; line-height: 1; }
-.cal-nav:hover { background: rgba(255,229,0,0.12); color: var(--yellow); }
-.cal-weekdays { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 0.5rem; }
-.cal-weekday { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,240,232,0.3); text-align: center; padding: 0.3rem 0; }
-.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
-.cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; border-radius: 6px; cursor: pointer; color: var(--white); border: none; background: none; font-family: var(--font-body); transition: all 0.12s; }
-.cal-day:hover:not(.past):not(.other-month) { background: rgba(255,229,0,0.15); color: var(--yellow); }
-.cal-day.today { border: 1px solid rgba(255,229,0,0.5); color: var(--yellow); font-weight: 600; }
-.cal-day.selected { background: var(--yellow) !important; color: var(--black) !important; font-weight: 700; }
-.cal-day.other-month { color: rgba(245,240,232,0.12); cursor: default; }
-.cal-day.past { color: rgba(245,240,232,0.18); cursor: default; }
+.cal-wrap {
+  position: fixed;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 1.25rem;
+  width: 300px;
+  box-shadow: var(--shadow-lg); z-index: 7001;
+}
+.cal-header {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 1rem;
+}
+.cal-month-label {
+  font-family: var(--font-display); font-size: 1.1rem;
+  color: var(--text); text-transform: uppercase; letter-spacing: 0.03em;
+}
+.cal-nav {
+  background: var(--light); border: none; cursor: pointer;
+  color: var(--text); font-size: 1.1rem;
+  width: 34px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; line-height: 1;
+}
+.cal-nav:hover { background: var(--coral); color: var(--white); }
+.cal-weekdays { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 0.4rem; }
+.cal-weekday {
+  font-family: var(--font-mono); font-size: 0.58rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); text-align: center; padding: 0.3rem 0;
+}
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+.cal-day {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; border-radius: 8px; cursor: pointer;
+  color: var(--text); border: none; background: none;
+  font-family: var(--font-body); transition: all 0.12s;
+}
+.cal-day:hover:not(.past):not(.other-month) { background: rgba(232,82,58,0.1); color: var(--coral); }
+.cal-day.today { border: 2px solid var(--coral); color: var(--coral); font-weight: 600; }
+.cal-day.selected { background: var(--coral) !important; color: var(--white) !important; font-weight: 700; }
+.cal-day.other-month { color: var(--border); cursor: default; }
+.cal-day.past { color: var(--border); cursor: default; }
+
+/* ── WALK BUILDER ── */
 .walk-builder-overlay { position: fixed; inset: 0; z-index: 2000; display: flex; pointer-events: none; }
 .walk-builder-overlay.open { pointer-events: all; }
-.walk-builder-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s; }
+.walk-builder-backdrop { position: absolute; inset: 0; background: rgba(44,62,80,0.4); backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s; }
 .walk-builder-overlay.open .walk-builder-backdrop { opacity: 1; }
-.walk-builder-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 100%; max-width: 480px; background: var(--mid); border-left: 1px solid rgba(255,229,0,0.2); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.35s ease; overflow: hidden; }
+.walk-builder-panel {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 100%; max-width: 480px; background: var(--white);
+  border-left: 2px solid var(--border);
+  display: flex; flex-direction: column;
+  transform: translateX(100%); transition: transform 0.35s ease; overflow: hidden;
+  box-shadow: -8px 0 32px rgba(44,62,80,0.12);
+}
 .walk-builder-overlay.open .walk-builder-panel { transform: translateX(0); }
-.wb-header { background: var(--black); padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,229,0,0.15); display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+.wb-header {
+  background: var(--text); padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; gap: 1rem; flex-shrink: 0;
+}
 .wb-header h2 { font-family: var(--font-display); font-size: 1.5rem; text-transform: uppercase; color: var(--yellow); flex: 1; }
-.wb-close { background: rgba(255,255,255,0.08); border: none; color: var(--white); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: background 0.2s; flex-shrink: 0; }
-.wb-close:hover { background: rgba(255,255,255,0.16); }
-.wb-body { flex: 1; overflow-y: auto; padding: 1.25rem 1.5rem; }
-.wb-section-title { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,229,0,0.6); margin-bottom: 0.75rem; margin-top: 1.5rem; }
+.wb-close {
+  background: rgba(255,255,255,0.12); border: none; color: var(--white);
+  width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: background 0.2s;
+}
+.wb-close:hover { background: rgba(255,255,255,0.22); }
+.wb-body { flex: 1; overflow-y: auto; padding: 1.5rem; background: var(--bg); }
+.wb-section-title {
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 0.75rem; margin-top: 1.5rem;
+}
 .wb-section-title:first-child { margin-top: 0; }
 .wb-field { margin-bottom: 0.75rem; }
-.wb-field label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(245,240,232,0.45); display: block; margin-bottom: 0.35rem; }
-.wb-field input { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: var(--white); padding: 0.7rem 0.9rem; font-family: var(--font-body); font-size: 1rem; border-radius: 2px; outline: none; transition: border-color 0.2s; min-height: var(--tap); }
-.wb-field input:focus { border-color: var(--yellow); }
-.wb-field input[readonly] { cursor: pointer; caret-color: transparent; }
-.wb-field input[readonly]:hover { border-color: rgba(255,229,0,0.4); }
+.wb-field label {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 0.35rem;
+}
+.wb-field input {
+  width: 100%; background: var(--white); border: 1.5px solid var(--border); color: var(--text);
+  padding: 0.7rem 0.9rem; font-family: var(--font-body); font-size: 0.95rem;
+  border-radius: 8px; outline: none; transition: border-color 0.2s; min-height: var(--tap);
+}
+.wb-field input:focus { border-color: var(--coral); }
+.wb-field input[readonly] { cursor: pointer; caret-color: transparent; background: var(--light); }
+.wb-field input[readonly]:hover { border-color: var(--coral); }
 .wb-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
-.wb-toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0.9rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 0.75rem; }
-.wb-toggle-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,240,232,0.6); }
-.wb-toggle-sub { font-size: 0.62rem; color: rgba(245,240,232,0.3); margin-top: 0.15rem; font-family: var(--font-mono); }
+.wb-toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.9rem 1rem; background: var(--white);
+  border: 1.5px solid var(--border); border-radius: 8px; margin-bottom: 0.75rem;
+}
+.wb-toggle-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text); font-weight: 500; }
+.wb-toggle-sub { font-size: 0.62rem; color: var(--muted); margin-top: 0.15rem; font-family: var(--font-mono); }
 .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
-.toggle-slider { position: absolute; inset: 0; cursor: pointer; background: rgba(255,255,255,0.15); border-radius: 24px; transition: background 0.25s; }
-.toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: var(--white); border-radius: 50%; transition: transform 0.25s; }
-.toggle-switch input:checked + .toggle-slider { background: var(--yellow); }
-.toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); background: var(--black); }
+.toggle-slider { position: absolute; inset: 0; cursor: pointer; background: var(--border); border-radius: 24px; transition: background 0.25s; }
+.toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: var(--white); border-radius: 50%; transition: transform 0.25s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+.toggle-switch input:checked + .toggle-slider { background: var(--teal); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
 .wb-stop-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
-.wb-stop-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: rgba(255,229,0,0.06); border: 1px solid rgba(255,229,0,0.15); border-radius: 2px; }
-.wb-stop-item.is-direction { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); }
-.wb-stop-num { font-family: var(--font-mono); font-size: 0.65rem; color: var(--yellow); min-width: 20px; text-align: center; }
-.wb-stop-num.direction-num { color: rgba(245,240,232,0.3); }
+.wb-stop-item {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 1rem; background: var(--white);
+  border: 1.5px solid var(--border); border-radius: 8px;
+}
+.wb-stop-item.is-direction { background: var(--light); }
+.wb-stop-num { font-family: var(--font-mono); font-size: 0.65rem; color: var(--coral); min-width: 20px; text-align: center; font-weight: 500; }
+.wb-stop-num.direction-num { color: var(--muted); }
 .wb-stop-info { flex: 1; min-width: 0; }
-.wb-stop-name { font-size: 0.88rem; font-weight: 500; }
-.wb-stop-meta { font-family: var(--font-mono); font-size: 0.62rem; color: rgba(245,240,232,0.35); margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.wb-stop-badge { font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15rem 0.4rem; border-radius: 2px; flex-shrink: 0; }
-.wb-stop-badge.pin { background: rgba(255,229,0,0.15); color: var(--yellow); }
-.wb-stop-badge.dir { background: rgba(255,255,255,0.07); color: rgba(245,240,232,0.35); }
-.wb-remove-btn { background: none; border: none; color: rgba(245,240,232,0.25); cursor: pointer; font-size: 1rem; line-height: 1; padding: 4px; transition: color 0.2s; flex-shrink: 0; }
+.wb-stop-name { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+.wb-stop-meta { font-family: var(--font-mono); font-size: 0.62rem; color: var(--muted); margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wb-stop-badge { font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15rem 0.5rem; border-radius: 20px; flex-shrink: 0; font-weight: 500; }
+.wb-stop-badge.pin { background: rgba(232,82,58,0.1); color: var(--coral); }
+.wb-stop-badge.dir { background: var(--light); color: var(--muted); }
+.wb-remove-btn { background: none; border: none; color: var(--border); cursor: pointer; font-size: 1rem; line-height: 1; padding: 4px; transition: color 0.2s; flex-shrink: 0; }
 .wb-remove-btn:hover { color: var(--coral); }
-.wb-empty { font-family: var(--font-mono); font-size: 0.72rem; color: rgba(245,240,232,0.25); text-align: center; padding: 2rem 1rem; letter-spacing: 0.08em; line-height: 1.6; }
-.wb-routing-status { display: flex; align-items: center; gap: 0.6rem; font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.08em; color: rgba(245,240,232,0.35); margin-bottom: 1rem; padding: 0.6rem 0.9rem; background: rgba(255,255,255,0.03); border-radius: 2px; border: 1px solid rgba(255,255,255,0.07); }
-.routing-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(245,240,232,0.15); flex-shrink: 0; }
+.wb-empty { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); text-align: center; padding: 2rem 1rem; letter-spacing: 0.06em; line-height: 1.6; }
+.wb-routing-status {
+  display: flex; align-items: center; gap: 0.6rem; font-family: var(--font-mono); font-size: 0.65rem;
+  letter-spacing: 0.08em; color: var(--muted); margin-bottom: 1rem; padding: 0.6rem 0.9rem;
+  background: var(--white); border-radius: 8px; border: 1px solid var(--border);
+}
+.routing-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
 .routing-dot.loading { background: var(--yellow); animation: blink 0.8s ease-in-out infinite; }
-.routing-dot.done { background: #4ade80; }
+.routing-dot.done { background: #2ECC71; }
 @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
-.wb-footer { padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255,229,0,0.15); background: var(--black); display: flex; flex-direction: column; gap: 0.6rem; flex-shrink: 0; }
-.wb-publish-btn { width: 100%; background: var(--yellow); color: var(--black); border: none; padding: 1rem; font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: background 0.2s; min-height: var(--tap); }
-.wb-publish-btn:hover { background: #FFD000; }
-.wb-publish-btn:disabled { background: rgba(255,229,0,0.2); color: rgba(10,10,10,0.5); cursor: not-allowed; }
-.wb-discard-btn { width: 100%; background: transparent; color: rgba(245,240,232,0.35); border: 1px solid rgba(245,240,232,0.12); padding: 0.7rem; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: all 0.2s; min-height: 40px; }
+.wb-footer { padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); background: var(--white); display: flex; flex-direction: column; gap: 0.6rem; flex-shrink: 0; }
+.wb-publish-btn { width: 100%; background: var(--teal); color: var(--white); border: none; padding: 1rem; font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 8px; transition: all 0.2s; min-height: var(--tap); font-weight: 500; }
+.wb-publish-btn:hover { background: #238378; transform: translateY(-1px); }
+.wb-publish-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; }
+.wb-discard-btn { width: 100%; background: transparent; color: var(--muted); border: 1.5px solid var(--border); padding: 0.7rem; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 8px; transition: all 0.2s; min-height: 40px; }
 .wb-discard-btn:hover { color: var(--coral); border-color: var(--coral); }
-.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); z-index: 10000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+
+/* ── ADMIN LOGIN MODAL ── */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(44,62,80,0.5); backdrop-filter: blur(6px); z-index: 10000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
 .modal-backdrop.open { opacity: 1; pointer-events: all; }
-.modal-box { background: var(--mid); border: 1px solid rgba(255,229,0,0.3); border-radius: 12px 12px 0 0; padding: 2rem 1.5rem 2.5rem; width: 100%; max-width: 480px; position: relative; transform: translateY(40px); transition: transform 0.3s ease; }
+.modal-box { background: var(--white); border-top: 3px solid var(--teal); border-radius: 20px 20px 0 0; padding: 2rem 1.5rem 2.5rem; width: 100%; max-width: 480px; position: relative; transform: translateY(40px); transition: transform 0.3s ease; }
 .modal-backdrop.open .modal-box { transform: translateY(0); }
-.modal-close { position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.08); border: none; color: var(--white); font-size: 1rem; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-.modal-close:hover { background: rgba(255,255,255,0.16); }
-.modal-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 1.5rem; }
-.modal-title { font-family: var(--font-display); font-size: 2rem; text-transform: uppercase; color: var(--yellow); margin-bottom: 0.2rem; }
-.modal-sub { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; color: rgba(245,240,232,0.4); text-transform: uppercase; margin-bottom: 1.5rem; }
+.modal-close { position: absolute; top: 1rem; right: 1rem; background: var(--light); border: none; color: var(--text); font-size: 1rem; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.modal-close:hover { background: var(--border); }
+.modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 1.5rem; }
+.modal-title { font-family: var(--font-display); font-size: 2rem; text-transform: uppercase; color: var(--teal); margin-bottom: 0.2rem; }
+.modal-sub { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; margin-bottom: 1.5rem; }
 .modal-group { margin-bottom: 1rem; }
-.modal-group label { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(245,240,232,0.5); display: block; margin-bottom: 0.4rem; }
-.modal-group input { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,229,0,0.2); color: var(--white); padding: 0.85rem 1rem; font-family: var(--font-body); font-size: 1rem; border-radius: 2px; outline: none; transition: border-color 0.2s; min-height: var(--tap); }
-.modal-group input:focus { border-color: var(--yellow); }
+.modal-group label { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 0.4rem; }
+.modal-group input { width: 100%; background: var(--light); border: 1.5px solid var(--border); color: var(--text); padding: 0.85rem 1rem; font-family: var(--font-body); font-size: 1rem; border-radius: 8px; outline: none; transition: border-color 0.2s; min-height: var(--tap); }
+.modal-group input:focus { border-color: var(--teal); background: var(--white); }
 .modal-error { font-family: var(--font-mono); font-size: 0.7rem; color: var(--coral); letter-spacing: 0.07em; min-height: 1.2em; margin-bottom: 0.75rem; }
-.btn-modal-login { width: 100%; background: var(--yellow); color: var(--black); border: none; padding: 1rem; font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: background 0.2s; min-height: var(--tap); }
-.btn-modal-login:hover { background: #FFD000; }
-.gallery-section { background: var(--black); padding: 4rem 0; }
-.gallery-inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.btn-modal-login { width: 100%; background: var(--teal); color: var(--white); border: none; padding: 1rem; font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 8px; transition: all 0.2s; min-height: var(--tap); font-weight: 500; }
+.btn-modal-login:hover { background: #238378; }
+
+/* ── SOCIAL ── */
+.gallery-section { background: var(--white); padding: 5rem 0; border-top: 1px solid var(--border); }
+.gallery-inner { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
 .social-grid { display: flex; justify-content: center; gap: 2.5rem; margin-top: 2.5rem; flex-wrap: wrap; }
 .social-link { display: flex; flex-direction: column; align-items: center; gap: 0.85rem; text-decoration: none; }
-.social-icon-box { width: 72px; height: 72px; border: 1px solid rgba(255,229,0,0.25); border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s, background 0.2s; }
-.social-link:hover .social-icon-box { border-color: var(--yellow); background: rgba(255,229,0,0.07); }
-.social-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(245,240,232,0.5); }
-.rsvp-section { background: var(--cyan); padding: 4rem 0; position: relative; overflow: hidden; }
-.rsvp-bg-text { font-family: var(--font-display); font-size: clamp(5rem,18vw,14rem); color: rgba(10,10,10,0.08); position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); white-space: nowrap; pointer-events: none; }
-.rsvp-inner { max-width: 680px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1; text-align: center; }
-.rsvp-section .section-label { color: rgba(10,10,10,0.55); }
-.rsvp-section .section-title { color: var(--black); margin-bottom: 0.75rem; }
-.rsvp-sub { font-size: 1rem; font-weight: 300; color: rgba(10,10,10,0.7); line-height: 1.6; }
-.share-section { background: var(--black); border-top: 1px solid rgba(255,229,0,0.12); border-bottom: 1px solid rgba(255,229,0,0.12); padding: 4rem 0; }
-.share-inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
-.share-card { background: var(--mid); border: 1px solid rgba(255,229,0,0.15); border-radius: 4px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-.share-status { display: flex; align-items: center; gap: 0.75rem; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,240,232,0.4); }
-.pulse-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(245,240,232,0.2); flex-shrink: 0; transition: background 0.3s; }
-.pulse-dot.active { background: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,0.2); animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%,100%{box-shadow:0 0 0 3px rgba(74,222,128,0.2);} 50%{box-shadow:0 0 0 7px rgba(74,222,128,0.04);} }
+.social-icon-box { width: 80px; height: 80px; border: 2px solid var(--border); border-radius: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; background: var(--light); }
+.social-link:hover .social-icon-box { border-color: var(--coral); background: rgba(232,82,58,0.06); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,82,58,0.15); }
+.social-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+/* ── RSVP ── */
+.rsvp-section { background: linear-gradient(135deg, var(--teal) 0%, #1D7A6F 100%); padding: 5rem 0; position: relative; overflow: hidden; }
+.rsvp-bg-text { font-family: var(--font-display); font-size: clamp(5rem,18vw,14rem); color: rgba(255,255,255,0.07); position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); white-space: nowrap; pointer-events: none; }
+.rsvp-inner { max-width: 700px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; text-align: center; }
+.rsvp-section .section-label { color: rgba(255,255,255,0.7); }
+.rsvp-section .section-title { color: var(--white); margin-bottom: 0.75rem; }
+.rsvp-sub { font-size: 1rem; font-weight: 300; color: rgba(255,255,255,0.8); line-height: 1.7; }
+
+/* ── SHARE ── */
+.share-section { background: var(--bg); padding: 5rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.share-inner { max-width: 1100px; margin: 0 auto; padding: 0 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+.share-card { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 1.75rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: var(--shadow); }
+.share-status { display: flex; align-items: center; gap: 0.75rem; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.pulse-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); flex-shrink: 0; transition: background 0.3s; }
+.pulse-dot.active { background: #2ECC71; box-shadow: 0 0 0 3px rgba(46,204,113,0.2); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 3px rgba(46,204,113,0.2);} 50%{box-shadow:0 0 0 7px rgba(46,204,113,0.05);} }
 .share-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); padding: 2rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+
+/* ── FOOTER ── */
+footer { background: var(--text); padding: 2.5rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
 .footer-logo { font-family: var(--font-display); font-size: 1.6rem; letter-spacing: 0.05em; color: var(--yellow); }
-.footer-copy { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.08em; color: rgba(245,240,232,0.3); }
-.footer-links { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-.footer-links a { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-decoration: none; color: rgba(245,240,232,0.4); transition: color 0.2s; min-height: 36px; display: flex; align-items: center; }
+.footer-copy { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.35); }
+.footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+.footer-links a { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-decoration: none; color: rgba(255,255,255,0.45); transition: color 0.2s; min-height: 36px; display: flex; align-items: center; }
 .footer-links a:hover { color: var(--yellow); }
-.toast { position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--yellow); color: var(--black); padding: 0.75rem 1.5rem; font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 40px; opacity: 0; transition: all 0.3s; z-index: 9999; white-space: nowrap; max-width: calc(100vw - 2rem); text-align: center; }
+
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: var(--white); padding: 0.8rem 1.5rem; font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 40px; opacity: 0; transition: all 0.3s; z-index: 9999; white-space: nowrap; max-width: calc(100vw - 2rem); text-align: center; box-shadow: var(--shadow-lg); }
 .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* ── MOBILE ── */
 @media (max-width: 768px) {
   .hero { grid-template-columns: 1fr; }
-  .hero-left { padding: 2.5rem 1.25rem 2rem; }
-  .hero-right { padding: 2rem 1.25rem 2.5rem; border-left: none; border-top: 3px solid var(--yellow); }
+  .hero-left { padding: 2.5rem 1.5rem 2rem; }
+  .hero-right { padding: 2rem 1.5rem 2.5rem; }
   .film-strip { display: none; }
   .hero-cta { flex-direction: column; }
   .hero-cta .btn { width: 100%; }
@@ -268,7 +572,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
   footer { flex-direction: column; align-items: flex-start; }
   .walk-builder-panel { max-width: 100%; border-left: none; }
   .wb-row { grid-template-columns: 1fr; }
-  .cal-wrap { width: calc(100vw - 2rem); left: 1rem !important; right: 1rem !important; }
+  .cal-wrap { width: calc(100vw - 2rem); }
 }
 @media (max-width: 380px) { .hero-title { font-size: 2.8rem; } .section-title { font-size: 2rem; } }
 </style>
@@ -297,7 +601,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
   </div>
 </div>
 
-<!-- CALENDAR -->
+<!-- CALENDAR — fixed positioning, opens next to input -->
 <div class="cal-backdrop" id="cal-backdrop" onclick="handleCalBackdropClick(event)">
   <div class="cal-wrap" id="cal-wrap" onclick="event.stopPropagation()">
     <div class="cal-header">
@@ -332,16 +636,18 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
         <label for="wb-walk-name">Walk name / neighbourhood</label>
         <input type="text" id="wb-walk-name" placeholder="e.g. Vesterbro · Meatpacking District">
       </div>
-      <div class="wb-field">
+      <div class="wb-field" style="position:relative;">
         <label for="wb-walk-date">Date — tap to pick</label>
-        <input type="text" id="wb-walk-date" placeholder="Tap to pick a date..." readonly
+        <input type="text" id="wb-walk-date"
+               placeholder="Tap to pick a date..."
+               readonly
                onclick="openCalendar(this)">
       </div>
       <p class="wb-section-title">Add a stop</p>
       <div class="wb-field autocomplete-wrap">
         <label for="wb-stop-name">Stop name or address</label>
         <input type="text" id="wb-stop-name"
-               placeholder="e.g. Koedbyen, Istedgade 1..."
+               placeholder="Search address or place name..."
                autocomplete="off"
                oninput="acSearch(this,'wb-stop-lat','wb-stop-lng')"
                onkeydown="acKeyNav(event,'ac-wb-stop-name')">
@@ -378,7 +684,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
       </div>
       <p class="wb-section-title">Stops in this walk</p>
       <div class="wb-stop-list" id="wb-stop-list">
-        <div class="wb-empty">No stops yet. Add your first one above, or tap the map to fill coordinates.</div>
+        <div class="wb-empty">No stops yet. Add your first one above, or tap the map.</div>
       </div>
       <p class="admin-tip">Tap anywhere on the map to auto-fill coordinates.</p>
     </div>
@@ -425,9 +731,12 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
     <div class="hero-tag">Monthly · Free · Social</div>
   </div>
   <div class="hero-right">
-    <p class="hero-desc">A casual crew of photographers exploring Copenhagen one neighbourhood at a time — every month, one walk, endless frames.</p>
+    <p class="hero-desc">
+      A casual crew of photographers exploring Copenhagen one neighbourhood at a time
+      — every month, one walk, endless frames.
+    </p>
     <div class="hero-cta">
-      <a href="#rsvp"    class="btn btn-yellow">Join next walk</a>
+      <a href="#rsvp"    class="btn btn-coral">Join next walk</a>
       <a href="#gallery" class="btn btn-outline">See past walks</a>
     </div>
     <div class="hero-stat">
@@ -443,7 +752,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
   <div class="next-walk-inner">
     <div>
       <p class="section-label">Upcoming</p>
-      <h2 class="section-title" style="color:var(--black);">Next Walk</h2>
+      <h2 class="section-title">Next Walk</h2>
       <div class="walk-meta">
         <div class="meta-row"><span class="meta-key">Date</span><span class="meta-val" id="info-date">Loading...</span></div>
         <div class="meta-row"><span class="meta-key">Time</span><span class="meta-val">10:00 — 13:00</span></div>
@@ -453,12 +762,12 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
       </div>
     </div>
     <div class="walk-desc-block">
+      <span class="big-date" aria-hidden="true">WALK</span>
       <p>This month we head into the heart of Norrebro — one of Copenhagen's most vibrant and photogenic neighbourhoods. We'll wander through Assistens Kirkeaard, catch street life on Ravnsborggade, and end at Blaagards Plads for coffee and a photo chat.</p>
       <p>Bring whatever camera you have. The vibe is relaxed, curious, and social. No critiques, no pressure — just exploring and shooting together.</p>
-      <a href="#rsvp" class="btn btn-dark">Reserve my spot</a>
+      <a href="#rsvp" class="btn btn-coral">Reserve my spot</a>
     </div>
   </div>
-  <div class="big-date" aria-hidden="true">WALK</div>
 </section>
 
 <!-- ROUTE -->
@@ -474,7 +783,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
           <div class="db-dot" id="db-dot"></div>
           <span id="db-status-text">Connecting...</span>
         </div>
-        <p style="font-size:0.8rem; color:rgba(245,240,232,0.4); font-family:var(--font-mono); line-height:1.5;">
+        <p style="font-size:0.8rem; color:var(--muted); font-family:var(--font-mono);">
           Red pins = stops · Grey = directions only
         </p>
       </div>
@@ -486,11 +795,11 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
     <!-- ADMIN PANEL -->
     <div id="admin-panel">
       <div class="admin-panel-header">
-        <span>&#128272;</span>
+        <span style="font-size:1.1rem;">&#128272;</span>
         <h3>Admin — Manage Route</h3>
         <span class="admin-badge">Logged in</span>
       </div>
-      <p style="font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,229,0,0.5); margin-bottom:0.75rem;">
+      <p style="font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.75rem;">
         Add stop to current walk
       </p>
       <div class="admin-controls">
@@ -498,7 +807,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
           <label for="admin-stop-name">Stop name or address</label>
           <div class="autocomplete-wrap">
             <input type="text" id="admin-stop-name"
-                   placeholder="e.g. Superkilen, Norrebrogade 210..."
+                   placeholder="Search address or place..."
                    autocomplete="off"
                    oninput="acSearch(this,'admin-stop-lat','admin-stop-lng')"
                    onkeydown="acKeyNav(event,'ac-admin-stop-name')">
@@ -507,7 +816,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
         </div>
         <div>
           <label for="admin-stop-desc">Description</label>
-          <input type="text" id="admin-stop-desc" placeholder="e.g. Bold patterns">
+          <input type="text" id="admin-stop-desc" placeholder="e.g. Bold patterns, great light">
         </div>
         <div>
           <label for="admin-stop-lat">Latitude</label>
@@ -520,7 +829,7 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
         <div class="span-2" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
           <button class="btn-admin" onclick="adminAddStop()">+ Add stop</button>
           <button class="btn-admin" onclick="openWalkBuilder()"
-                  style="background:var(--coral); color:var(--white);">
+                  style="background:var(--coral);">
             Create new walk
           </button>
         </div>
@@ -534,9 +843,9 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
 <section class="share-section" id="share">
   <div class="share-inner">
     <div>
-      <p class="section-label" style="color:var(--yellow);">For late arrivals</p>
+      <p class="section-label">For late arrivals</p>
       <h2 class="section-title">Share Your Location</h2>
-      <p style="font-size:1rem; font-weight:300; color:rgba(245,240,232,0.6); line-height:1.7; margin-top:0.75rem;">
+      <p style="font-size:1rem; font-weight:300; color:var(--muted); line-height:1.75; margin-top:0.75rem;">
         Running late? Hit the button, copy the link, paste it in the group chat — everyone sees exactly where you are on Google Maps.
       </p>
     </div>
@@ -547,41 +856,41 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
       </div>
       <div id="coords-display" style="display:none;">
         <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
-          <p style="font-family:var(--font-mono); font-size:0.68rem; color:rgba(245,240,232,0.4); letter-spacing:0.1em; margin:0;">YOUR POSITION</p>
-          <p id="timestamp" style="font-family:var(--font-mono); font-size:0.68rem; color:rgba(245,240,232,0.3); margin:0;"></p>
+          <p style="font-family:var(--font-mono); font-size:0.68rem; color:var(--muted); letter-spacing:0.1em; margin:0;">YOUR POSITION</p>
+          <p id="timestamp" style="font-family:var(--font-mono); font-size:0.68rem; color:var(--muted); margin:0;"></p>
         </div>
-        <p id="coords-text" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--yellow); margin:0;"></p>
-        <div style="margin-top:0.75rem; height:3px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
-          <div id="refresh-bar" style="height:100%; width:100%; background:var(--yellow);"></div>
+        <p id="coords-text" style="font-family:var(--font-mono); font-size:0.88rem; color:var(--coral); margin:0; font-weight:500;"></p>
+        <div style="margin-top:0.75rem; height:4px; background:var(--light); border-radius:2px; overflow:hidden;">
+          <div id="refresh-bar" style="height:100%; width:100%; background:var(--teal); border-radius:2px; transition:width 0.5s linear;"></div>
         </div>
-        <p id="next-refresh" style="font-family:var(--font-mono); font-size:0.62rem; color:rgba(245,240,232,0.3); margin-top:0.3rem;"></p>
+        <p id="next-refresh" style="font-family:var(--font-mono); font-size:0.62rem; color:var(--muted); margin-top:0.3rem;"></p>
       </div>
-      <button class="btn btn-yellow" id="share-btn" onclick="startSharing()"
+      <button class="btn btn-teal" id="share-btn" onclick="startSharing()"
               style="width:100%; border:none; cursor:pointer;">Start auto-sharing</button>
       <button id="stop-btn" onclick="stopSharing()"
-              style="display:none; width:100%; background:transparent; border:1px solid rgba(245,240,232,0.2);
-                     color:rgba(245,240,232,0.5); padding:0.75rem; font-family:var(--font-mono);
-                     font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
-                     border-radius:2px; min-height:var(--tap);">Stop sharing</button>
+              style="display:none; width:100%; background:transparent; border:1.5px solid var(--border);
+                     color:var(--muted); padding:0.75rem; font-family:var(--font-mono); font-size:0.75rem;
+                     letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
+                     border-radius:8px; min-height:var(--tap);">Stop sharing</button>
       <div id="link-box" style="display:none;">
-        <p style="font-family:var(--font-mono); font-size:0.62rem; color:rgba(245,240,232,0.35);
+        <p style="font-family:var(--font-mono); font-size:0.62rem; color:var(--muted);
                   letter-spacing:0.1em; margin-bottom:0.4rem; text-transform:uppercase;">
           Shareable link — updates every 2 min
         </p>
         <input id="share-link" type="text" readonly
-               style="width:100%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,229,0,0.3);
-                      color:var(--white); padding:0.65rem 0.9rem; font-family:var(--font-mono);
-                      font-size:0.72rem; border-radius:2px; outline:none; min-height:var(--tap);">
+               style="width:100%; background:var(--light); border:1.5px solid var(--border);
+                      color:var(--text); padding:0.65rem 0.9rem; font-family:var(--font-mono);
+                      font-size:0.72rem; border-radius:8px; outline:none; min-height:var(--tap);">
         <div class="share-btn-row" style="margin-top:0.5rem;">
-          <button class="btn btn-yellow" onclick="copyLink()"
+          <button class="btn btn-coral" onclick="copyLink()"
                   style="border:none; cursor:pointer; font-size:0.75rem; padding:0.6rem 0.5rem;">Copy link</button>
           <button class="btn" onclick="nativeShare()"
-                  style="background:var(--cyan); color:var(--black); border:none; cursor:pointer;
+                  style="background:var(--blue); color:var(--white); border:none; cursor:pointer;
                          font-size:0.75rem; padding:0.6rem 0.5rem; letter-spacing:0.08em;
-                         font-family:var(--font-mono); text-transform:uppercase;">Share via...</button>
+                         font-family:var(--font-mono); text-transform:uppercase; border-radius:8px;">Share via...</button>
         </div>
       </div>
-      <p style="font-size:0.7rem; color:rgba(245,240,232,0.3); font-family:var(--font-mono); line-height:1.5;">
+      <p style="font-size:0.7rem; color:var(--muted); font-family:var(--font-mono); line-height:1.5;">
         Auto-refreshes every 2 min — nothing is stored anywhere.
       </p>
     </div>
@@ -593,25 +902,25 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
   <div class="gallery-inner" style="text-align:center;">
     <p class="section-label">Follow along</p>
     <h2 class="section-title">Find Us Online</h2>
-    <p style="font-size:1rem; font-weight:300; color:rgba(245,240,232,0.5); margin-top:0.75rem; line-height:1.7;">
+    <p style="font-size:1rem; font-weight:300; color:var(--muted); margin-top:0.75rem; line-height:1.75;">
       Photos from every walk and group chat on our socials.
     </p>
     <div class="social-grid">
       <a class="social-link" href="https://www.instagram.com/cph_photo_walks/" target="_blank" rel="noopener">
         <div class="social-icon-box">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none"
-               stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+               stroke="var(--coral)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5"/>
             <circle cx="12" cy="12" r="4"/>
-            <circle cx="17.5" cy="6.5" r="1.2" fill="var(--yellow)" stroke="none"/>
+            <circle cx="17.5" cy="6.5" r="1.2" fill="var(--coral)" stroke="none"/>
           </svg>
         </div>
         <span class="social-label">@cph_photo_walks</span>
       </a>
       <a class="social-link" href="https://www.facebook.com/groups/665374108947503" target="_blank" rel="noopener">
         <div class="social-icon-box">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none"
-               stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+               stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
           </svg>
         </div>
@@ -627,12 +936,14 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
   <div class="rsvp-inner">
     <p class="section-label">Join us</p>
     <h2 class="section-title">Reserve Your Spot</h2>
-    <p class="rsvp-sub" style="margin-bottom:0;">
+    <p class="rsvp-sub" style="margin-bottom:0; margin-top:0.75rem;">
       RSVP coming soon — in the meantime join us on Facebook and sign up directly on the event page.
     </p>
-    <div id="fb-event-link-box" style="display:none; margin-top:1.75rem;">
+    <div id="fb-event-link-box" style="display:none; margin-top:2rem;">
       <a id="fb-event-link" href="#" target="_blank" rel="noopener"
-         class="btn btn-dark" style="display:inline-flex; align-items:center; gap:0.6rem;">
+         class="btn" style="display:inline-flex; align-items:center; gap:0.6rem;
+                            background:var(--white); color:var(--teal); font-weight:600;
+                            box-shadow:0 4px 16px rgba(0,0,0,0.15);">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
@@ -641,33 +952,30 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
       </a>
     </div>
     <div id="rsvp-admin-panel"
-         style="display:none; margin-top:2.5rem; background:rgba(10,10,10,0.15);
-                border:1px solid rgba(10,10,10,0.25); border-radius:4px; padding:1.25rem; text-align:left;">
-      <p style="font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.14em;
-                text-transform:uppercase; color:rgba(10,10,10,0.55); margin-bottom:0.75rem;">
+         style="display:none; margin-top:2.5rem; background:rgba(255,255,255,0.15);
+                border:1px solid rgba(255,255,255,0.3); border-radius:12px;
+                padding:1.25rem; text-align:left; backdrop-filter:blur(4px);">
+      <p style="font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.12em;
+                text-transform:uppercase; color:rgba(255,255,255,0.7); margin-bottom:0.75rem;">
         Admin — Facebook Event Link
       </p>
       <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
         <input type="url" id="fb-link-input" placeholder="https://www.facebook.com/events/..."
-               style="flex:1; min-width:200px; background:rgba(10,10,10,0.08);
-                      border:1px solid rgba(10,10,10,0.25); color:var(--black);
+               style="flex:1; min-width:200px; background:rgba(255,255,255,0.9);
+                      border:1.5px solid rgba(255,255,255,0.5); color:var(--text);
                       padding:0.75rem 1rem; font-family:var(--font-body); font-size:1rem;
-                      border-radius:2px; outline:none; min-height:var(--tap);">
+                      border-radius:8px; outline:none; min-height:var(--tap);">
         <button onclick="saveFbLink()"
-                style="background:var(--black); color:var(--yellow); border:none; padding:0.75rem 1.25rem;
+                style="background:var(--white); color:var(--teal); border:none; padding:0.75rem 1.25rem;
                        font-family:var(--font-mono); font-size:0.75rem; letter-spacing:0.1em;
-                       text-transform:uppercase; cursor:pointer; border-radius:2px;
-                       min-height:var(--tap); white-space:nowrap;">Save link</button>
+                       text-transform:uppercase; cursor:pointer; border-radius:8px;
+                       min-height:var(--tap); white-space:nowrap; font-weight:600;">Save</button>
         <button onclick="removeFbLink()"
-                style="background:transparent; color:rgba(10,10,10,0.45); border:1px solid rgba(10,10,10,0.2);
+                style="background:transparent; color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.4);
                        padding:0.75rem 1rem; font-family:var(--font-mono); font-size:0.75rem;
                        letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
-                       border-radius:2px; min-height:var(--tap); white-space:nowrap;">Remove</button>
+                       border-radius:8px; min-height:var(--tap); white-space:nowrap;">Remove</button>
       </div>
-      <p style="font-family:var(--font-mono); font-size:0.62rem; color:rgba(10,10,10,0.4);
-                margin-top:0.6rem; letter-spacing:0.07em; line-height:1.5;">
-        Paste the full Facebook event URL — saves to database instantly for all visitors.
-      </p>
     </div>
   </div>
 </section>
@@ -680,16 +988,16 @@ footer { background: var(--black); border-top: 1px solid rgba(255,229,0,0.1); pa
     <a href="#">Flickr</a>
     <a href="#">Contact</a>
   </div>
-  <p class="footer-copy">2025 Copenhagen Photowalks · Made with love</p>
+  <p class="footer-copy">2025 Copenhagen Photowalks</p>
 </footer>
 
 <div class="toast" id="toast"></div>
 
 <script>
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════
    FIREBASE
-══════════════════════════════════════════════ */
-const firebaseConfig = {
+═══════════════════════════════════ */
+var firebaseConfig = {
   apiKey:            "AIzaSyCGkMmLcZFRPQsDYiLQz7WNAFF7ITKk_ak",
   authDomain:        "cph-photowalks.firebaseapp.com",
   projectId:         "cph-photowalks",
@@ -698,34 +1006,30 @@ const firebaseConfig = {
   appId:             "1:267719892330:web:56b8e2ed72c73d11185913"
 };
 firebase.initializeApp(firebaseConfig);
-const db        = firebase.firestore();
-const stopsCol  = db.collection('stops');
-const configDoc = db.collection('config').doc('current');
+var db        = firebase.firestore();
+var stopsCol  = db.collection('stops');
+var configDoc = db.collection('config').doc('current');
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════
    MAP
-══════════════════════════════════════════════ */
-const map = L.map('map', { tap: true }).setView([55.686, 12.562], 14);
+═══════════════════════════════════ */
+var map = L.map('map', { tap: true }).setView([55.686, 12.562], 14);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  attribution: '© OpenStreetMap © CARTO',
-  maxZoom: 19
+  attribution: '© OpenStreetMap © CARTO', maxZoom: 19
 }).addTo(map);
 
 function makeRedIcon() {
   return L.divIcon({
     className: '',
-    html: '<div style="width:16px;height:16px;background:#FF4B2B;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>',
-    iconSize: [16, 16],
-    iconAnchor: [8, 8]
+    html: '<div style="width:16px;height:16px;background:#E8523A;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(232,82,58,0.5);"></div>',
+    iconSize: [16, 16], iconAnchor: [8, 8]
   });
 }
-
 function makeGhostIcon() {
   return L.divIcon({
     className: '',
-    html: '<div style="width:10px;height:10px;background:#aaa;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25);"></div>',
-    iconSize: [10, 10],
-    iconAnchor: [5, 5]
+    html: '<div style="width:10px;height:10px;background:#DDE3EC;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.15);"></div>',
+    iconSize: [10, 10], iconAnchor: [5, 5]
   });
 }
 
@@ -738,22 +1042,16 @@ function fetchStreetRoute(stops, cb) {
     return;
   }
   var coords = stops.map(function(s) { return s.lng + ',' + s.lat; }).join(';');
-  var url = 'https://router.project-osrm.org/route/v1/foot/' + coords + '?overview=full&geometries=geojson';
-  fetch(url)
+  fetch('https://router.project-osrm.org/route/v1/foot/' + coords + '?overview=full&geometries=geojson')
     .then(function(res) { return res.json(); })
     .then(function(data) {
       if (data.routes && data.routes[0]) {
-        var latlngs = data.routes[0].geometry.coordinates.map(function(c) {
-          return [c[1], c[0]];
-        });
-        cb(latlngs);
+        cb(data.routes[0].geometry.coordinates.map(function(c) { return [c[1], c[0]]; }));
       } else {
         cb(stops.map(function(s) { return [s.lat, s.lng]; }));
       }
     })
-    .catch(function() {
-      cb(stops.map(function(s) { return [s.lat, s.lng]; }));
-    });
+    .catch(function() { cb(stops.map(function(s) { return [s.lat, s.lng]; })); });
 }
 
 function redrawPolyline(stops) {
@@ -761,7 +1059,7 @@ function redrawPolyline(stops) {
   if (stops.length < 2) return;
   fetchStreetRoute(stops, function(latlngs) {
     activePolyline = L.polyline(latlngs, {
-      color: '#FF4B2B', weight: 4, opacity: 0.75, dashArray: '8 5'
+      color: '#E8523A', weight: 4, opacity: 0.7, dashArray: '8 5'
     }).addTo(map);
   });
 }
@@ -781,15 +1079,13 @@ map.on('click', function(e) {
   showToast('Coordinates filled');
 });
 
-/* ══════════════════════════════════════════════
-   FIRESTORE REAL-TIME LISTENERS
-══════════════════════════════════════════════ */
+/* ═══════════════════════════════════
+   FIRESTORE LISTENERS
+═══════════════════════════════════ */
 function initListeners() {
-
   stopsCol.orderBy('order').onSnapshot(function(snapshot) {
     Object.values(activeMarkers).forEach(function(m) { map.removeLayer(m); });
     activeMarkers = {};
-
     var stops = [];
     var list  = document.getElementById('location-list');
     list.innerHTML = '';
@@ -797,31 +1093,25 @@ function initListeners() {
     snapshot.forEach(function(doc) {
       var s = Object.assign({ id: doc.id }, doc.data());
       stops.push(s);
-
-      var marker = L.marker([s.lat, s.lng], {
-        icon: s.showPin ? makeRedIcon() : makeGhostIcon()
-      }).addTo(map).bindPopup('<strong>' + escapeHTML(s.name) + '</strong><br>' + escapeHTML(s.desc || ''));
+      var marker = L.marker([s.lat, s.lng], { icon: s.showPin ? makeRedIcon() : makeGhostIcon() })
+        .addTo(map)
+        .bindPopup('<strong>' + escapeHTML(s.name) + '</strong><br>' + escapeHTML(s.desc || ''));
       activeMarkers[s.id] = marker;
-
       var item = document.createElement('div');
       item.className = 'loc-item' + (s.showPin ? '' : ' hidden-stop');
       item.dataset.docId = s.id;
       item.innerHTML =
         '<div class="loc-dot' + (s.showPin ? '' : ' hidden') + '"></div>' +
-        '<div style="flex:1">' +
-          '<div class="loc-name">' + escapeHTML(s.name) + '</div>' +
-          '<div class="loc-desc">' + escapeHTML(s.desc || '') + '</div>' +
-        '</div>' +
+        '<div style="flex:1"><div class="loc-name">' + escapeHTML(s.name) + '</div>' +
+        '<div class="loc-desc">' + escapeHTML(s.desc || '') + '</div></div>' +
         '<span class="loc-type' + (s.showPin ? '' : ' direction') + '">' + (s.showPin ? 'Stop' : 'Direction') + '</span>' +
         '<button class="stop-delete-btn" onclick="deleteStop(\'' + s.id + '\')">Remove</button>';
       list.appendChild(item);
     });
 
     redrawPolyline(stops);
-
     document.getElementById('db-dot').classList.add('live');
     document.getElementById('db-status-text').textContent = 'Live — synced';
-
   }, function(err) {
     console.error(err);
     document.getElementById('db-status-text').textContent = 'Connection error';
@@ -841,12 +1131,11 @@ function initListeners() {
     }
   });
 }
-
 initListeners();
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════
    DELETE STOP
-══════════════════════════════════════════════ */
+═══════════════════════════════════ */
 function deleteStop(docId) {
   if (!isAdmin) return;
   if (!confirm('Remove this stop?')) return;
@@ -855,22 +1144,18 @@ function deleteStop(docId) {
     .catch(function(e) { showToast('Error removing stop'); console.error(e); });
 }
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════
    ADMIN ADD STOP
-══════════════════════════════════════════════ */
+═══════════════════════════════════ */
 function adminAddStop() {
   if (!isAdmin) return;
   var name = document.getElementById('admin-stop-name').value.trim();
   var desc = document.getElementById('admin-stop-desc').value.trim();
   var lat  = parseFloat(document.getElementById('admin-stop-lat').value);
   var lng  = parseFloat(document.getElementById('admin-stop-lng').value);
-
-  if (!name)                 { showToast('Please enter a stop name'); return; }
+  if (!name)                    { showToast('Please enter a stop name'); return; }
   if (isNaN(lat) || isNaN(lng)) { showToast('Enter coordinates or tap the map'); return; }
-  if (lat < 55.5 || lat > 55.9 || lng < 12.3 || lng > 12.8) {
-    showToast('Coordinates seem outside Copenhagen'); return;
-  }
-
+  if (lat < 55.5 || lat > 55.9 || lng < 12.3 || lng > 12.8) { showToast('Coordinates seem outside Copenhagen'); return; }
   stopsCol.add({ name: name, desc: desc || '', lat: lat, lng: lng, showPin: true, order: Date.now() })
     .then(function() {
       document.getElementById('admin-stop-name').value = '';
@@ -883,12 +1168,10 @@ function adminAddStop() {
     .catch(function(e) { showToast('Error saving stop'); console.error(e); });
 }
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════
    WALK BUILDER
-══════════════════════════════════════════════ */
-var wbStops          = [];
-var wbPreviewMarkers  = [];
-var wbPreviewPolyline = null;
+═══════════════════════════════════ */
+var wbStops = [], wbPreviewMarkers = [], wbPreviewPolyline = null;
 
 function openWalkBuilder() {
   wbStops = [];
@@ -897,20 +1180,13 @@ function openWalkBuilder() {
   });
   document.getElementById('wb-stop-visible').checked = true;
   document.getElementById('wb-routing-status').style.display = 'none';
-  renderWbList();
-  clearWbPreview();
+  renderWbList(); clearWbPreview();
   document.getElementById('walk-builder').classList.add('open');
 }
-
-function closeWalkBuilder() {
-  document.getElementById('walk-builder').classList.remove('open');
-}
-
+function closeWalkBuilder() { document.getElementById('walk-builder').classList.remove('open'); }
 function discardWalk() {
   if (wbStops.length > 0 && !confirm('Discard this walk?')) return;
-  clearWbPreview();
-  wbStops = [];
-  closeWalkBuilder();
+  clearWbPreview(); wbStops = []; closeWalkBuilder();
 }
 
 function wbAddStop() {
@@ -919,45 +1195,30 @@ function wbAddStop() {
   var lat     = parseFloat(document.getElementById('wb-stop-lat').value);
   var lng     = parseFloat(document.getElementById('wb-stop-lng').value);
   var visible = document.getElementById('wb-stop-visible').checked;
-
-  if (!name)                 { showToast('Please enter a stop name'); return; }
+  if (!name)                    { showToast('Please enter a stop name'); return; }
   if (isNaN(lat) || isNaN(lng)) { showToast('Enter coordinates or tap the map'); return; }
-  if (lat < 55.5 || lat > 55.9 || lng < 12.3 || lng > 12.8) {
-    showToast('Coordinates seem outside Copenhagen'); return;
-  }
-
+  if (lat < 55.5 || lat > 55.9 || lng < 12.3 || lng > 12.8) { showToast('Coordinates seem outside Copenhagen'); return; }
   wbStops.push({ name: name, desc: desc || '', lat: lat, lng: lng, showPin: visible });
-
-  ['wb-stop-name','wb-stop-desc','wb-stop-lat','wb-stop-lng'].forEach(function(id) {
-    document.getElementById(id).value = '';
-  });
+  ['wb-stop-name','wb-stop-desc','wb-stop-lat','wb-stop-lng'].forEach(function(id) { document.getElementById(id).value = ''; });
   document.getElementById('wb-stop-visible').checked = true;
   document.getElementById('ac-wb-stop-name').style.display = 'none';
-
-  renderWbList();
-  updateWbPreview();
+  renderWbList(); updateWbPreview();
   showToast('Stop ' + wbStops.length + ' added');
 }
 
-function wbRemoveStop(idx) {
-  wbStops.splice(idx, 1);
-  renderWbList();
-  updateWbPreview();
-}
+function wbRemoveStop(idx) { wbStops.splice(idx,1); renderWbList(); updateWbPreview(); }
 
 function renderWbList() {
-  var list       = document.getElementById('wb-stop-list');
-  var publishBtn = document.getElementById('wb-publish-btn');
-  publishBtn.disabled = wbStops.length === 0;
-
+  var list = document.getElementById('wb-stop-list');
+  var pub  = document.getElementById('wb-publish-btn');
+  pub.disabled = wbStops.length === 0;
   if (!wbStops.length) {
     list.innerHTML = '<div class="wb-empty">No stops yet. Add your first one above, or tap the map.</div>';
     return;
   }
-
-  list.innerHTML = wbStops.map(function(s, i) {
+  list.innerHTML = wbStops.map(function(s,i) {
     return '<div class="wb-stop-item ' + (s.showPin ? '' : 'is-direction') + '">' +
-      '<div class="wb-stop-num ' + (s.showPin ? '' : 'direction-num') + '">' + (i + 1) + '</div>' +
+      '<div class="wb-stop-num ' + (s.showPin ? '' : 'direction-num') + '">' + (i+1) + '</div>' +
       '<div class="wb-stop-info">' +
         '<div class="wb-stop-name">' + escapeHTML(s.name) + '</div>' +
         '<div class="wb-stop-meta">' + s.lat.toFixed(4) + ', ' + s.lng.toFixed(4) + (s.desc ? ' · ' + escapeHTML(s.desc) : '') + '</div>' +
@@ -971,92 +1232,70 @@ function renderWbList() {
 function updateWbPreview() {
   clearWbPreview();
   if (!wbStops.length) return;
-
   wbStops.forEach(function(s) {
-    var m = L.marker([s.lat, s.lng], { icon: s.showPin ? makeRedIcon() : makeGhostIcon() })
+    var m = L.marker([s.lat,s.lng],{icon:s.showPin?makeRedIcon():makeGhostIcon()})
       .addTo(map)
       .bindPopup('<strong>' + escapeHTML(s.name) + '</strong>' + (s.desc ? '<br>' + escapeHTML(s.desc) : ''));
     wbPreviewMarkers.push(m);
   });
-
   if (wbStops.length < 2) return;
-
   var statusBox = document.getElementById('wb-routing-status');
-  var dot       = document.getElementById('wb-routing-dot');
-  var txt       = document.getElementById('wb-routing-text');
-  statusBox.style.display = 'flex';
-  dot.className = 'routing-dot loading';
-  txt.textContent = 'Calculating street route...';
-
+  var dot = document.getElementById('wb-routing-dot');
+  var txt = document.getElementById('wb-routing-text');
+  statusBox.style.display = 'flex'; dot.className = 'routing-dot loading'; txt.textContent = 'Calculating street route...';
   fetchStreetRoute(wbStops, function(latlngs) {
-    wbPreviewPolyline = L.polyline(latlngs, {
-      color: '#FF4B2B', weight: 4, opacity: 0.8, dashArray: '8 5'
-    }).addTo(map);
-    dot.className   = 'routing-dot done';
-    txt.textContent = 'Street route calculated';
-    map.fitBounds(L.latLngBounds(wbStops.map(function(s) { return [s.lat, s.lng]; })), { padding: [40, 40] });
+    wbPreviewPolyline = L.polyline(latlngs,{color:'#E8523A',weight:4,opacity:0.8,dashArray:'8 5'}).addTo(map);
+    dot.className = 'routing-dot done'; txt.textContent = 'Street route calculated';
+    map.fitBounds(L.latLngBounds(wbStops.map(function(s){return[s.lat,s.lng];})),{padding:[40,40]});
   });
 }
 
 function clearWbPreview() {
-  wbPreviewMarkers.forEach(function(m) { map.removeLayer(m); });
-  wbPreviewMarkers = [];
-  if (wbPreviewPolyline) { map.removeLayer(wbPreviewPolyline); wbPreviewPolyline = null; }
-  document.getElementById('wb-routing-status').style.display = 'none';
+  wbPreviewMarkers.forEach(function(m){map.removeLayer(m);}); wbPreviewMarkers=[];
+  if (wbPreviewPolyline){map.removeLayer(wbPreviewPolyline);wbPreviewPolyline=null;}
+  document.getElementById('wb-routing-status').style.display='none';
 }
 
 function publishWalk() {
   if (!wbStops.length) { showToast('Add at least one stop first'); return; }
   var walkName = document.getElementById('wb-walk-name').value.trim();
   var walkDate = document.getElementById('wb-walk-date').value.trim();
-  if (!confirm('Publish "' + (walkName || 'New Walk') + '"?\nThis replaces ALL current stops for every visitor.')) return;
-
+  if (!confirm('Publish "' + (walkName||'New Walk') + '"?\nThis replaces all current stops for every visitor.')) return;
   stopsCol.get().then(function(existing) {
     var batch = db.batch();
     existing.forEach(function(doc) { batch.delete(doc.ref); });
-    wbStops.forEach(function(s, i) {
+    wbStops.forEach(function(s,i) {
       var ref = stopsCol.doc();
-      batch.set(ref, { name: s.name, desc: s.desc, lat: s.lat, lng: s.lng, showPin: s.showPin, order: i });
+      batch.set(ref,{name:s.name,desc:s.desc,lat:s.lat,lng:s.lng,showPin:s.showPin,order:i});
     });
-    batch.set(configDoc, {
-      walkName: walkName || 'Upcoming Walk',
-      walkDate: walkDate || '—'
-    }, { merge: true });
+    batch.set(configDoc,{walkName:walkName||'Upcoming Walk',walkDate:walkDate||'—'},{merge:true});
     return batch.commit();
-  }).then(function() {
-    clearWbPreview();
-    wbStops = [];
-    closeWalkBuilder();
+  }).then(function(){
+    clearWbPreview(); wbStops=[]; closeWalkBuilder();
     showToast('Walk published — all visitors updated');
-  }).catch(function(e) { showToast('Error publishing walk'); console.error(e); });
+  }).catch(function(e){showToast('Error publishing walk');console.error(e);});
 }
 
-/* ══════════════════════════════════════════════
-   FACEBOOK EVENT LINK
-══════════════════════════════════════════════ */
+/* ═══════════════════════════════════
+   FACEBOOK LINK
+═══════════════════════════════════ */
 function saveFbLink() {
   var input = document.getElementById('fb-link-input').value.trim();
   if (!input) { showToast('Please paste a Facebook event URL'); return; }
-  if (input.indexOf('https://www.facebook.com/events/') !== 0) {
-    showToast('That does not look like a Facebook event link'); return;
-  }
-  configDoc.set({ fbLink: input }, { merge: true })
-    .then(function() { showToast('Facebook event link saved'); })
-    .catch(function(e) { showToast('Error saving link'); console.error(e); });
+  if (input.indexOf('https://www.facebook.com/events/') !== 0) { showToast('That does not look like a Facebook event link'); return; }
+  configDoc.set({fbLink:input},{merge:true})
+    .then(function(){showToast('Facebook event link saved');})
+    .catch(function(e){showToast('Error saving link');console.error(e);});
 }
-
 function removeFbLink() {
-  configDoc.set({ fbLink: '' }, { merge: true })
-    .then(function() {
-      document.getElementById('fb-link-input').value = '';
-      showToast('Event link removed');
-    })
-    .catch(function(e) { showToast('Error removing link'); console.error(e); });
+  configDoc.set({fbLink:''},{merge:true})
+    .then(function(){document.getElementById('fb-link-input').value='';showToast('Event link removed');})
+    .catch(function(e){showToast('Error removing link');console.error(e);});
 }
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════
    ADMIN AUTH
-══════════════════════════════════════════════ */
+═══════════════════════════════════ */
 var ADMIN_USER = 'admin';
 var ADMIN_PASS = 'admin123';
 var isAdmin    = false;
@@ -1064,186 +1303,159 @@ var isAdmin    = false;
 function openAdminModal(e) {
   if (e) e.preventDefault();
   document.getElementById('admin-modal').classList.add('open');
-  setTimeout(function() { document.getElementById('admin-user-input').focus(); }, 300);
-  document.getElementById('modal-error').textContent = '';
+  setTimeout(function(){document.getElementById('admin-user-input').focus();},300);
+  document.getElementById('modal-error').textContent='';
 }
-
 function closeAdminModal() {
   document.getElementById('admin-modal').classList.remove('open');
-  document.getElementById('admin-pass-input').value = '';
-  document.getElementById('modal-error').textContent = '';
+  document.getElementById('admin-pass-input').value='';
+  document.getElementById('modal-error').textContent='';
 }
-
 function attemptAdminLogin() {
   var user = document.getElementById('admin-user-input').value.trim();
   var pass = document.getElementById('admin-pass-input').value;
-  if (user === ADMIN_USER && pass === ADMIN_PASS) {
-    isAdmin = true;
-    closeAdminModal();
+  if (user===ADMIN_USER && pass===ADMIN_PASS) {
+    isAdmin=true; closeAdminModal();
     document.getElementById('admin-panel').classList.add('visible');
-    document.getElementById('admin-nav-actions').style.display = 'flex';
-    document.getElementById('admin-login-link').style.display  = 'none';
-    document.getElementById('rsvp-admin-panel').style.display  = 'block';
+    document.getElementById('admin-nav-actions').style.display='flex';
+    document.getElementById('admin-login-link').style.display='none';
+    document.getElementById('rsvp-admin-panel').style.display='block';
     document.body.classList.add('admin-mode');
     showToast('Welcome back, admin');
   } else {
-    document.getElementById('modal-error').textContent = 'Incorrect username or password.';
-    document.getElementById('admin-pass-input').value  = '';
+    document.getElementById('modal-error').textContent='Incorrect username or password.';
+    document.getElementById('admin-pass-input').value='';
     document.getElementById('admin-pass-input').focus();
   }
 }
-
 function adminLogout() {
-  isAdmin = false;
+  isAdmin=false;
   document.getElementById('admin-panel').classList.remove('visible');
-  document.getElementById('admin-nav-actions').style.display = 'none';
-  document.getElementById('admin-login-link').style.display  = 'block';
-  document.getElementById('rsvp-admin-panel').style.display  = 'none';
+  document.getElementById('admin-nav-actions').style.display='none';
+  document.getElementById('admin-login-link').style.display='block';
+  document.getElementById('rsvp-admin-panel').style.display='none';
   document.body.classList.remove('admin-mode');
-  closeNav();
-  showToast('Logged out');
+  closeNav(); showToast('Logged out');
 }
+document.getElementById('admin-modal').addEventListener('click',function(e){if(e.target===this)closeAdminModal();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeAdminModal();closeCalendar();}});
 
-document.getElementById('admin-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeAdminModal();
-});
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { closeAdminModal(); closeCalendar(); }
-});
-
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════
    NAV
-══════════════════════════════════════════════ */
+═══════════════════════════════════ */
 function toggleNav() {
-  var links  = document.getElementById('nav-links');
-  var burger = document.getElementById('hamburger');
-  links.classList.toggle('open');
-  burger.classList.toggle('open');
-  burger.setAttribute('aria-label', links.classList.contains('open') ? 'Close menu' : 'Open menu');
+  var links=document.getElementById('nav-links');
+  var burger=document.getElementById('hamburger');
+  links.classList.toggle('open'); burger.classList.toggle('open');
+  burger.setAttribute('aria-label',links.classList.contains('open')?'Close menu':'Open menu');
 }
-
 function closeNav() {
   document.getElementById('nav-links').classList.remove('open');
   document.getElementById('hamburger').classList.remove('open');
 }
-
-document.addEventListener('click', function(e) {
-  if (!document.querySelector('nav').contains(e.target)) closeNav();
+document.addEventListener('click',function(e){
+  if(!document.querySelector('nav').contains(e.target))closeNav();
 });
 
-/* ══════════════════════════════════════════════
-   AUTOCOMPLETE  — Nominatim
-   NOTE: plain & used in URL string (NOT &amp;)
-══════════════════════════════════════════════ */
-var acTimers   = {};
-var acSelected = {};
+/* ═══════════════════════════════════
+   AUTOCOMPLETE — Nominatim
+═══════════════════════════════════ */
+var acTimers={}, acSelected={};
 
 function acSearch(inputEl, latId, lngId) {
   var query  = inputEl.value.trim();
   var listEl = document.getElementById('ac-' + inputEl.id);
-
-  if (query.length < 2) { listEl.style.display = 'none'; return; }
-
+  if (query.length < 2) { listEl.style.display='none'; return; }
   clearTimeout(acTimers[inputEl.id]);
-  listEl.style.display = 'block';
-  listEl.innerHTML = '<div class="autocomplete-msg">Searching...</div>';
-  acSelected[listEl.id] = -1;
-
-  acTimers[inputEl.id] = setTimeout(function() {
+  listEl.style.display='block';
+  listEl.innerHTML='<div class="autocomplete-msg">Searching...</div>';
+  acSelected[listEl.id]=-1;
+  acTimers[inputEl.id]=setTimeout(function(){
     var url = 'https://nominatim.openstreetmap.org/search?q=' +
               encodeURIComponent(query + ' Copenhagen') +
               '&format=json&limit=6&bounded=1&viewbox=12.20,55.95,12.80,55.55&countrycodes=dk&addressdetails=1';
-
-    fetch(url, { headers: { 'Accept-Language': 'en' } })
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
-        if (!data.length) {
-          listEl.innerHTML = '<div class="autocomplete-msg">No results found</div>';
-          return;
-        }
-        listEl.innerHTML = data.map(function(item) {
-          var parts     = item.display_name.split(',');
-          var primary   = item.name || parts[0].trim();
-          var secondary = parts.slice(1, 3).join(',').trim();
-          return '<div class="autocomplete-item"' +
-                 ' onmousedown="event.preventDefault()"' +
+    fetch(url,{headers:{'Accept-Language':'en'}})
+      .then(function(res){return res.json();})
+      .then(function(data){
+        if(!data.length){listEl.innerHTML='<div class="autocomplete-msg">No results found</div>';return;}
+        listEl.innerHTML=data.map(function(item){
+          var parts=item.display_name.split(',');
+          var primary=item.name||parts[0].trim();
+          var secondary=parts.slice(1,3).join(',').trim();
+          return '<div class="autocomplete-item" onmousedown="event.preventDefault()"' +
                  ' onclick="acSelect(\'' + inputEl.id + '\',\'' + latId + '\',\'' + lngId + '\',' +
-                 item.lat + ',' + item.lon + ',\'' + primary.replace(/'/g, "\\'") + '\')">' +
+                 item.lat + ',' + item.lon + ',\'' + primary.replace(/'/g,"\\'") + '\')">' +
                  '<div class="autocomplete-name">' + escapeHTML(primary) + '</div>' +
-                 '<div class="autocomplete-addr">' + escapeHTML(secondary) + '</div>' +
-                 '</div>';
+                 '<div class="autocomplete-addr">' + escapeHTML(secondary) + '</div></div>';
         }).join('');
       })
-      .catch(function() {
-        listEl.innerHTML = '<div class="autocomplete-msg">Search unavailable</div>';
-      });
-  }, 350);
+      .catch(function(){listEl.innerHTML='<div class="autocomplete-msg">Search unavailable</div>';});
+  },350);
 }
 
-function acKeyNav(e, listId) {
-  var list  = document.getElementById(listId);
-  var items = list.querySelectorAll('.autocomplete-item');
-  if (!items.length) return;
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    acSelected[listId] = Math.min((acSelected[listId] !== undefined ? acSelected[listId] : -1) + 1, items.length - 1);
-    items.forEach(function(el, i) { el.classList.toggle('hover', i === acSelected[listId]); });
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    acSelected[listId] = Math.max((acSelected[listId] !== undefined ? acSelected[listId] : 0) - 1, 0);
-    items.forEach(function(el, i) { el.classList.toggle('hover', i === acSelected[listId]); });
-  } else if (e.key === 'Enter') {
-    e.preventDefault();
-    var idx = acSelected[listId] !== undefined ? acSelected[listId] : -1;
-    if (idx >= 0 && items[idx]) items[idx].click();
-  } else if (e.key === 'Escape') {
-    list.style.display = 'none';
-  }
+function acKeyNav(e,listId){
+  var list=document.getElementById(listId);
+  var items=list.querySelectorAll('.autocomplete-item');
+  if(!items.length)return;
+  if(e.key==='ArrowDown'){e.preventDefault();acSelected[listId]=Math.min((acSelected[listId]!==undefined?acSelected[listId]:-1)+1,items.length-1);items.forEach(function(el,i){el.classList.toggle('hover',i===acSelected[listId]);});}
+  else if(e.key==='ArrowUp'){e.preventDefault();acSelected[listId]=Math.max((acSelected[listId]!==undefined?acSelected[listId]:0)-1,0);items.forEach(function(el,i){el.classList.toggle('hover',i===acSelected[listId]);});}
+  else if(e.key==='Enter'){e.preventDefault();var idx=acSelected[listId]!==undefined?acSelected[listId]:-1;if(idx>=0&&items[idx])items[idx].click();}
+  else if(e.key==='Escape'){list.style.display='none';}
 }
-
-function acSelect(inputId, latId, lngId, lat, lng, name) {
-  document.getElementById(inputId).value = name;
-  document.getElementById(latId).value   = parseFloat(lat).toFixed(5);
-  document.getElementById(lngId).value   = parseFloat(lng).toFixed(5);
-  document.getElementById('ac-' + inputId).style.display = 'none';
-  map.panTo([parseFloat(lat), parseFloat(lng)]);
+function acSelect(inputId,latId,lngId,lat,lng,name){
+  document.getElementById(inputId).value=name;
+  document.getElementById(latId).value=parseFloat(lat).toFixed(5);
+  document.getElementById(lngId).value=parseFloat(lng).toFixed(5);
+  document.getElementById('ac-'+inputId).style.display='none';
+  map.panTo([parseFloat(lat),parseFloat(lng)]);
   showToast('Location found');
 }
-
-document.addEventListener('click', function(e) {
-  document.querySelectorAll('.autocomplete-list').forEach(function(list) {
-    if (!list.contains(e.target)) list.style.display = 'none';
+document.addEventListener('click',function(e){
+  document.querySelectorAll('.autocomplete-list').forEach(function(list){
+    if(!list.contains(e.target))list.style.display='none';
   });
 });
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════
    CALENDAR DATE PICKER
-══════════════════════════════════════════════ */
-var MONTH_NAMES = [
-  'January','February','March','April','May','June',
-  'July','August','September','October','November','December'
-];
-var DAY_NAMES = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-
-var calViewDate    = new Date();
-var calPickedDate  = null;
-var calTargetInput = null;
+   FIXED: uses viewport coords (no scrollY)
+   because .cal-backdrop is position:fixed
+═══════════════════════════════════ */
+var MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var DAY_NAMES=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+var calViewDate=new Date(), calPickedDate=null, calTargetInput=null;
 
 function openCalendar(inputEl) {
   calTargetInput = inputEl;
   var backdrop   = document.getElementById('cal-backdrop');
   var wrap       = document.getElementById('cal-wrap');
-  var rect       = inputEl.getBoundingClientRect();
-  var spaceBelow = window.innerHeight - rect.bottom;
 
-  if (spaceBelow < 330) {
-    wrap.style.top = (rect.top + window.scrollY - 340) + 'px';
+  /* getBoundingClientRect() gives VIEWPORT coordinates.
+     Since .cal-backdrop is position:fixed, we use these
+     directly — do NOT add window.scrollY */
+  var rect       = inputEl.getBoundingClientRect();
+  var calHeight  = 340;
+  var calWidth   = 300;
+  var margin     = 8;
+
+  /* Decide whether to open below or above the input */
+  var spaceBelow = window.innerHeight - rect.bottom;
+  var topPos;
+  if (spaceBelow >= calHeight + margin) {
+    topPos = rect.bottom + margin;
   } else {
-    wrap.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+    topPos = rect.top - calHeight - margin;
   }
-  var leftPos = Math.min(rect.left, window.innerWidth - 310);
-  wrap.style.left = Math.max(8, leftPos) + 'px';
+
+  /* Clamp left so calendar stays on screen */
+  var leftPos = rect.left;
+  if (leftPos + calWidth > window.innerWidth - 8) {
+    leftPos = window.innerWidth - calWidth - 8;
+  }
+  if (leftPos < 8) leftPos = 8;
+
+  wrap.style.top  = topPos  + 'px';
+  wrap.style.left = leftPos + 'px';
 
   backdrop.classList.add('open');
   renderCalendar();
@@ -1252,217 +1464,168 @@ function openCalendar(inputEl) {
 function closeCalendar() {
   document.getElementById('cal-backdrop').classList.remove('open');
 }
-
 function handleCalBackdropClick(e) {
-  if (e.target === document.getElementById('cal-backdrop')) closeCalendar();
+  if (e.target===document.getElementById('cal-backdrop')) closeCalendar();
 }
-
 function calPrevMonth(e) {
   e.stopPropagation();
-  calViewDate = new Date(calViewDate.getFullYear(), calViewDate.getMonth() - 1, 1);
+  calViewDate=new Date(calViewDate.getFullYear(),calViewDate.getMonth()-1,1);
   renderCalendar();
 }
-
 function calNextMonth(e) {
   e.stopPropagation();
-  calViewDate = new Date(calViewDate.getFullYear(), calViewDate.getMonth() + 1, 1);
+  calViewDate=new Date(calViewDate.getFullYear(),calViewDate.getMonth()+1,1);
   renderCalendar();
 }
 
 function renderCalendar() {
   var year  = calViewDate.getFullYear();
   var month = calViewDate.getMonth();
-  var today = new Date();
-  today.setHours(0, 0, 0, 0);
-
+  var today = new Date(); today.setHours(0,0,0,0);
   document.getElementById('cal-month-label').textContent = MONTH_NAMES[month] + ' ' + year;
+  var firstDay=new Date(year,month,1);
+  var lastDay=new Date(year,month+1,0);
+  var startOffset=firstDay.getDay()-1;
+  if(startOffset<0)startOffset=6;
+  var grid=document.getElementById('cal-grid');
+  grid.innerHTML='';
 
-  var firstDay    = new Date(year, month, 1);
-  var lastDay     = new Date(year, month + 1, 0);
-  var startOffset = firstDay.getDay() - 1;
-  if (startOffset < 0) startOffset = 6;
-
-  var grid = document.getElementById('cal-grid');
-  grid.innerHTML = '';
-
-  for (var i = 0; i < startOffset; i++) {
-    var d   = new Date(year, month, -(startOffset - 1 - i));
-    var btn = document.createElement('button');
-    btn.className   = 'cal-day other-month';
-    btn.textContent = d.getDate();
-    btn.type        = 'button';
+  /* Previous month padding */
+  for(var i=0;i<startOffset;i++){
+    var d=new Date(year,month,-(startOffset-1-i));
+    var btn=document.createElement('button');
+    btn.className='cal-day other-month'; btn.textContent=d.getDate(); btn.type='button';
     grid.appendChild(btn);
   }
 
-  for (var day = 1; day <= lastDay.getDate(); day++) {
-    (function(d) {
-      var date = new Date(year, month, d);
-      date.setHours(0, 0, 0, 0);
-      var btn  = document.createElement('button');
-      btn.type = 'button';
-      var cls  = 'cal-day';
-      if (date < today)  cls += ' past';
-      if (date.getTime() === today.getTime()) cls += ' today';
-      if (calPickedDate && date.getTime() === calPickedDate.getTime()) cls += ' selected';
-      btn.className   = cls;
-      btn.textContent = d;
-      if (date >= today) {
-        btn.onclick = function(ev) {
-          ev.stopPropagation();
-          calPickDate(date);
-        };
+  /* Days of month */
+  for(var day=1;day<=lastDay.getDate();day++){
+    (function(d){
+      var date=new Date(year,month,d); date.setHours(0,0,0,0);
+      var btn=document.createElement('button'); btn.type='button';
+      var cls='cal-day';
+      if(date<today) cls+=' past';
+      if(date.getTime()===today.getTime()) cls+=' today';
+      if(calPickedDate&&date.getTime()===calPickedDate.getTime()) cls+=' selected';
+      btn.className=cls; btn.textContent=d;
+      if(date>=today){
+        btn.onclick=function(ev){ev.stopPropagation();calPickDate(date);};
       }
       grid.appendChild(btn);
     })(day);
   }
 
-  var total     = startOffset + lastDay.getDate();
-  var remainder = total % 7 === 0 ? 0 : 7 - (total % 7);
-  for (var j = 1; j <= remainder; j++) {
-    var btn2 = document.createElement('button');
-    btn2.className   = 'cal-day other-month';
-    btn2.textContent = j;
-    btn2.type        = 'button';
+  /* Trailing padding */
+  var total=startOffset+lastDay.getDate();
+  var remainder=total%7===0?0:7-(total%7);
+  for(var j=1;j<=remainder;j++){
+    var btn2=document.createElement('button');
+    btn2.className='cal-day other-month'; btn2.textContent=j; btn2.type='button';
     grid.appendChild(btn2);
   }
 }
 
 function calPickDate(date) {
-  calPickedDate  = date;
-  var dayIndex   = date.getDay() === 0 ? 6 : date.getDay() - 1;
-  var dow        = DAY_NAMES[dayIndex];
-  var formatted  = dow + ', ' + date.getDate() + ' ' + MONTH_NAMES[date.getMonth()] + ' ' + date.getFullYear();
-  if (calTargetInput) calTargetInput.value = formatted;
+  calPickedDate=date;
+  var dayIndex=date.getDay()===0?6:date.getDay()-1;
+  var dow=DAY_NAMES[dayIndex];
+  var formatted=dow+', '+date.getDate()+' '+MONTH_NAMES[date.getMonth()]+' '+date.getFullYear();
+  if(calTargetInput) calTargetInput.value=formatted;
   closeCalendar();
 }
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════
    LOCATION SHARING
-══════════════════════════════════════════════ */
-var currentLat      = null;
-var currentLng      = null;
-var refreshInterval  = null;
-var countdownInterval = null;
-var REFRESH_MS       = 2 * 60 * 1000;
+═══════════════════════════════════ */
+var currentLat=null,currentLng=null,refreshInterval=null,countdownInterval=null;
+var REFRESH_MS=2*60*1000;
 
-function startSharing() {
-  var btn = document.getElementById('share-btn');
-  btn.textContent = 'Getting location...';
-  btn.disabled = true;
-  if (!navigator.geolocation) {
-    showToast('Geolocation not supported');
-    btn.textContent = 'Start auto-sharing';
-    btn.disabled = false;
-    return;
-  }
-  fetchGeoLocation(function() {
-    btn.style.display = 'none';
-    document.getElementById('stop-btn').style.display       = 'block';
-    document.getElementById('link-box').style.display       = 'block';
-    document.getElementById('coords-display').style.display = 'block';
+function startSharing(){
+  var btn=document.getElementById('share-btn');
+  btn.textContent='Getting location...'; btn.disabled=true;
+  if(!navigator.geolocation){showToast('Geolocation not supported');btn.textContent='Start auto-sharing';btn.disabled=false;return;}
+  fetchGeoLocation(function(){
+    btn.style.display='none';
+    document.getElementById('stop-btn').style.display='block';
+    document.getElementById('link-box').style.display='block';
+    document.getElementById('coords-display').style.display='block';
     document.getElementById('pulse-dot').classList.add('active');
-    document.getElementById('status-text').textContent      = 'Auto-sharing active';
-    document.getElementById('status-text').style.color      = '#4ade80';
+    document.getElementById('status-text').textContent='Auto-sharing active';
+    document.getElementById('status-text').style.color='#2A9D8F';
     clearInterval(refreshInterval);
-    refreshInterval = setInterval(function() { fetchGeoLocation(); }, REFRESH_MS);
+    refreshInterval=setInterval(function(){fetchGeoLocation();},REFRESH_MS);
     startCountdown();
   });
 }
-
-function fetchGeoLocation(onSuccess) {
+function fetchGeoLocation(onSuccess){
   navigator.geolocation.getCurrentPosition(
-    function(pos) {
-      currentLat = pos.coords.latitude.toFixed(5);
-      currentLng = pos.coords.longitude.toFixed(5);
-      var timeStr = new Date().toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      document.getElementById('timestamp').textContent   = 'Updated ' + timeStr;
-      document.getElementById('coords-text').textContent = currentLat + ', ' + currentLng;
-      document.getElementById('share-link').value        = 'https://www.google.com/maps?q=' + currentLat + ',' + currentLng;
-      startCountdown();
-      if (onSuccess) onSuccess();
+    function(pos){
+      currentLat=pos.coords.latitude.toFixed(5);
+      currentLng=pos.coords.longitude.toFixed(5);
+      var timeStr=new Date().toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      document.getElementById('timestamp').textContent='Updated '+timeStr;
+      document.getElementById('coords-text').textContent=currentLat+', '+currentLng;
+      document.getElementById('share-link').value='https://www.google.com/maps?q='+currentLat+','+currentLng;
+      startCountdown(); if(onSuccess)onSuccess();
     },
-    function() {
-      showToast('Could not get location — check browser permissions');
-      var btn = document.getElementById('share-btn');
-      btn.textContent = 'Start auto-sharing';
-      btn.disabled = false;
-    },
-    { enableHighAccuracy: true, timeout: 10000 }
+    function(){showToast('Could not get location');var btn=document.getElementById('share-btn');btn.textContent='Start auto-sharing';btn.disabled=false;},
+    {enableHighAccuracy:true,timeout:10000}
   );
 }
-
-function startCountdown() {
+function startCountdown(){
   clearInterval(countdownInterval);
-  var bar   = document.getElementById('refresh-bar');
-  var label = document.getElementById('next-refresh');
-  var start = Date.now();
-  bar.style.width = '100%';
-  countdownInterval = setInterval(function() {
-    var remaining = Math.max(0, REFRESH_MS - (Date.now() - start));
-    var secs      = Math.ceil(remaining / 1000);
-    bar.style.width    = (remaining / REFRESH_MS * 100).toFixed(1) + '%';
-    label.textContent  = 'Next update in ' + (secs >= 60 ? Math.ceil(secs / 60) + ' min' : secs + 's');
-    if (remaining <= 0) clearInterval(countdownInterval);
-  }, 500);
+  var bar=document.getElementById('refresh-bar');
+  var label=document.getElementById('next-refresh');
+  var start=Date.now();
+  bar.style.width='100%';
+  countdownInterval=setInterval(function(){
+    var remaining=Math.max(0,REFRESH_MS-(Date.now()-start));
+    var secs=Math.ceil(remaining/1000);
+    bar.style.width=(remaining/REFRESH_MS*100).toFixed(1)+'%';
+    label.textContent='Next update in '+(secs>=60?Math.ceil(secs/60)+' min':secs+'s');
+    if(remaining<=0)clearInterval(countdownInterval);
+  },500);
 }
-
-function stopSharing() {
-  clearInterval(refreshInterval);
-  clearInterval(countdownInterval);
-  refreshInterval = null;
-  currentLat = null;
-  currentLng = null;
-  var btn = document.getElementById('share-btn');
-  btn.textContent = 'Start auto-sharing';
-  btn.disabled    = false;
-  btn.style.display = 'block';
-  document.getElementById('stop-btn').style.display       = 'none';
-  document.getElementById('link-box').style.display       = 'none';
-  document.getElementById('coords-display').style.display = 'none';
+function stopSharing(){
+  clearInterval(refreshInterval);clearInterval(countdownInterval);
+  refreshInterval=null;currentLat=null;currentLng=null;
+  var btn=document.getElementById('share-btn');
+  btn.textContent='Start auto-sharing';btn.disabled=false;btn.style.display='block';
+  document.getElementById('stop-btn').style.display='none';
+  document.getElementById('link-box').style.display='none';
+  document.getElementById('coords-display').style.display='none';
   document.getElementById('pulse-dot').classList.remove('active');
-  document.getElementById('status-text').textContent      = 'Not sharing';
-  document.getElementById('status-text').style.color      = '';
-  document.getElementById('refresh-bar').style.width      = '100%';
-  document.getElementById('next-refresh').textContent     = '';
+  document.getElementById('status-text').textContent='Not sharing';
+  document.getElementById('status-text').style.color='';
+  document.getElementById('refresh-bar').style.width='100%';
+  document.getElementById('next-refresh').textContent='';
 }
-
-function copyLink() {
+function copyLink(){
   navigator.clipboard.writeText(document.getElementById('share-link').value)
-    .then(function() { showToast('Link copied — paste it in the group chat!'); })
-    .catch(function() { showToast('Copy failed — select the link manually'); });
+    .then(function(){showToast('Link copied!');})
+    .catch(function(){showToast('Copy failed — select the link manually');});
+}
+function nativeShare(){
+  if(!currentLat)return;
+  var timeStr=new Date().toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'});
+  var mapsLink='https://www.google.com/maps?q='+currentLat+','+currentLng;
+  var text='Find us here (as of '+timeStr+'): '+mapsLink;
+  if(navigator.share){navigator.share({text:text}).catch(function(err){if(err.name!=='AbortError')copyLink();});}
+  else{navigator.clipboard.writeText(text).then(function(){showToast('Copied!');});}
 }
 
-function nativeShare() {
-  if (!currentLat) return;
-  var timeStr  = new Date().toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });
-  var mapsLink = 'https://www.google.com/maps?q=' + currentLat + ',' + currentLng;
-  var text     = 'Find us here (as of ' + timeStr + '): ' + mapsLink;
-  if (navigator.share) {
-    navigator.share({ text: text }).catch(function(err) {
-      if (err.name !== 'AbortError') copyLink();
-    });
-  } else {
-    navigator.clipboard.writeText(text).then(function() { showToast('Copied!'); });
-  }
-}
-
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════
    UTILITIES
-══════════════════════════════════════════════ */
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 3000);
+═══════════════════════════════════ */
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},3000);
 }
-
-function escapeHTML(str) {
+function escapeHTML(str){
   return String(str)
-    .replace(/&/g,  '&amp;')
-    .replace(/</g,  '&lt;')
-    .replace(/>/g,  '&gt;')
-    .replace(/"/g,  '&quot;')
-    .replace(/'/g,  '&#039;');
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 </script>
 </body>
