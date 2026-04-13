@@ -1355,3 +1355,119 @@ function fetchLocation(onSuccess) {
       currentLng = pos.coords.longitude.toFixed(5);
       const now = new Date();
       const timeStr = now.toLocaleTime
+      const timeStr = now.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('timestamp').textContent = 'Updated ' + timeStr;
+      document.getElementById('coords-text').textContent = currentLat + ', ' + currentLng;
+      const mapsLink = 'https://www.google.com/maps?q=' + currentLat + ',' + currentLng;
+      document.getElementById('share-link').value = mapsLink;
+      startCountdown();
+      if (onSuccess) onSuccess();
+    },
+    () => {
+      showToast('Could not get location — check browser permissions');
+      const btn = document.getElementById('share-btn');
+      btn.textContent = 'Start auto-sharing';
+      btn.disabled = false;
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+function startCountdown() {
+  clearInterval(countdownInterval);
+  const bar = document.getElementById('refresh-bar');
+  const label = document.getElementById('next-refresh');
+  const start = Date.now();
+  bar.style.transition = 'none';
+  bar.style.width = '100%';
+  countdownInterval = setInterval(() => {
+    const elapsed = Date.now() - start;
+    const remaining = Math.max(0, REFRESH_MS - elapsed);
+    const pct = (remaining / REFRESH_MS * 100).toFixed(1);
+    const secs = Math.ceil(remaining / 1000);
+    bar.style.width = pct + '%';
+    label.textContent = 'Next update in ' + (secs >= 60 ? Math.ceil(secs / 60) + ' min' : secs + 's');
+    if (remaining <= 0) clearInterval(countdownInterval);
+  }, 500);
+}
+
+function stopSharing() {
+  clearInterval(refreshInterval);
+  clearInterval(countdownInterval);
+  refreshInterval = null;
+  currentLat = null;
+  currentLng = null;
+  const btn = document.getElementById('share-btn');
+  btn.textContent = 'Start auto-sharing';
+  btn.disabled = false;
+  btn.style.display = 'block';
+  document.getElementById('stop-btn').style.display = 'none';
+  document.getElementById('link-box').style.display = 'none';
+  document.getElementById('coords-display').style.display = 'none';
+  document.getElementById('pulse-dot').classList.remove('active');
+  document.getElementById('status-text').textContent = 'Not sharing';
+  document.getElementById('status-text').style.color = '';
+  document.getElementById('refresh-bar').style.width = '100%';
+  document.getElementById('next-refresh').textContent = '';
+}
+
+function copyLink() {
+  const link = document.getElementById('share-link').value;
+  navigator.clipboard.writeText(link).then(() => showToast('Link copied — paste it in the group chat!'));
+}
+
+function nativeShare() {
+  if (!currentLat) return;
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });
+  const mapsLink = 'https://www.google.com/maps?q=' + currentLat + ',' + currentLng;
+  const text = '📍 Find us here (as of ' + timeStr + '): ' + mapsLink;
+  if (navigator.share) {
+    navigator.share({ text: text }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(text).then(() => showToast('Copied — paste it in your group chat'));
+  }
+}
+
+/* ─────────────────────────────────────────
+   RSVP  (fixed — was orphaned before)
+───────────────────────────────────────── */
+function submitRSVP() {
+  const name  = document.getElementById('rsvp-name').value.trim();
+  const email = document.getElementById('rsvp-email').value.trim();
+  if (!name || !email) {
+    showToast('Please fill in your name and email');
+    return;
+  }
+  if (!email.includes('@')) {
+    showToast('Please enter a valid email address');
+    return;
+  }
+  showToast('See you on the walk! ✓');
+  document.getElementById('rsvp-name').value  = '';
+  document.getElementById('rsvp-email').value = '';
+  document.getElementById('rsvp-gear').value  = '';
+}
+
+/* ─────────────────────────────────────────
+   UTILITIES
+───────────────────────────────────────── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Prevent XSS in dynamic HTML insertions
+function escapeHTML(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+</script>
+</body>
+</html>
