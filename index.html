@@ -104,7 +104,7 @@ body {
 .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
 /* ══════════════════════════════════════
-   NAV — DESKTOP
+   NAV
 ══════════════════════════════════════ */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 999;
@@ -144,18 +144,26 @@ nav {
 .nav-hamburger { display: none; }
 
 /* ══════════════════════════════════════
-   HERO — DESKTOP
+   HERO — FIXED FOR DESKTOP AND MOBILE
 ══════════════════════════════════════ */
 .hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
   min-height: 100svh;
-  display: grid; grid-template-columns: 1fr 1fr;
   padding-top: var(--nav-h);
   overflow: hidden;
 }
 .hero-left {
+  flex: 1 1 50%;
   background: linear-gradient(135deg, var(--coral) 0%, #C0392B 100%);
-  display: flex; flex-direction: column; justify-content: flex-end;
-  padding: 4rem 3rem; position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem 3rem;
+  position: relative;
+  min-height: 500px;
 }
 .hero-eyebrow {
   font-family: var(--font-mono); font-size: 0.72rem;
@@ -164,8 +172,10 @@ nav {
 }
 .hero-title {
   font-family: var(--font-display);
-  font-size: clamp(3.5rem, 8vw, 8rem);
-  line-height: 0.9; color: var(--white); text-transform: uppercase;
+  font-size: clamp(3rem, 6vw, 7rem);
+  line-height: 0.95;
+  color: var(--white);
+  text-transform: uppercase;
 }
 .hero-title span { display: block; }
 .hero-tag {
@@ -177,19 +187,38 @@ nav {
   border: 1px solid rgba(255,255,255,0.3);
 }
 .hero-right {
-  background: var(--white); display: flex;
-  flex-direction: column; justify-content: center;
+  flex: 1 1 50%;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 4rem 3rem;
+  min-height: 500px;
 }
 .hero-desc {
-  font-size: 1.15rem; font-weight: 300; line-height: 1.8;
-  color: var(--text); max-width: 420px; margin-bottom: 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--text);
+  max-width: 480px;
+  margin-bottom: 2.5rem;
 }
-.hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-.hero-stat { display: flex; gap: 2.5rem; margin-top: 3rem; flex-wrap: wrap; }
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.hero-stat {
+  display: flex;
+  gap: 2.5rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
 .stat-block .num {
-  font-family: var(--font-display); font-size: 3rem;
-  color: var(--coral); line-height: 1;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--coral);
+  line-height: 1;
 }
 .stat-block .lbl {
   font-size: 0.7rem; font-family: var(--font-mono);
@@ -197,20 +226,20 @@ nav {
   text-transform: uppercase; margin-top: 0.2rem;
 }
 .film-strip {
-  position: absolute; top: 0; right: -40px;
-  width: 80px; height: 100%;
+  position: absolute; top: 0; right: 0;
+  width: 40px; height: 100%;
   background: rgba(0,0,0,0.12);
   display: flex; flex-direction: column;
   justify-content: space-around; padding: 2rem 0;
 }
 .film-hole {
-  width: 18px; height: 12px;
+  width: 14px; height: 10px;
   background: rgba(255,255,255,0.25);
   border-radius: 2px; margin: 0 auto;
 }
 
 /* ══════════════════════════════════════
-   NEXT WALK — DESKTOP
+   NEXT WALK
 ══════════════════════════════════════ */
 .next-walk {
   background: var(--white); padding: 6rem 0;
@@ -239,13 +268,13 @@ nav {
 }
 .big-date {
   font-family: var(--font-display);
-  font-size: clamp(5rem, 10vw, 9rem); line-height: 1;
+  font-size: clamp(4rem, 8vw, 9rem); line-height: 1;
   color: rgba(232,82,58,0.07); display: block;
   margin-bottom: 1.5rem; pointer-events: none;
 }
 
 /* ══════════════════════════════════════
-   ROUTE & MAP — DESKTOP
+   ROUTE & MAP
 ══════════════════════════════════════ */
 .route-section { background: var(--light); padding: 6rem 0; }
 .route-inner { max-width: 1100px; margin: 0 auto; padding: 0 2.5rem; }
@@ -305,7 +334,7 @@ body.admin-mode .stop-delete-btn { display: flex; align-items: center; }
 .db-dot.live { background: #2ECC71; box-shadow: 0 0 0 3px rgba(46,204,113,0.2); }
 
 /* ══════════════════════════════════════
-   ADMIN PANEL — DESKTOP
+   ADMIN PANEL
 ══════════════════════════════════════ */
 #admin-panel {
   display: none; margin-top: 2rem; grid-column: 1 / -1;
@@ -371,7 +400,7 @@ body.admin-mode .stop-delete-btn { display: flex; align-items: center; }
 .autocomplete-msg { padding: 0.75rem 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); }
 
 /* ══════════════════════════════════════
-   CALENDAR — DESKTOP (opens next to input)
+   CALENDAR
 ══════════════════════════════════════ */
 .cal-backdrop {
   position: fixed; inset: 0; z-index: 7000;
@@ -402,7 +431,7 @@ body.admin-mode .stop-delete-btn { display: flex; align-items: center; }
 .cal-day.past { color: var(--border); cursor: default; }
 
 /* ══════════════════════════════════════
-   WALK BUILDER — DESKTOP (side panel)
+   WALK BUILDER
 ══════════════════════════════════════ */
 .walk-builder-overlay { position: fixed; inset: 0; z-index: 2000; display: flex; pointer-events: none; }
 .walk-builder-overlay.open { pointer-events: all; }
@@ -486,7 +515,7 @@ body.admin-mode .stop-delete-btn { display: flex; align-items: center; }
 .btn-modal-login:hover { background: #238378; }
 
 /* ══════════════════════════════════════
-   SHARE — DESKTOP
+   SHARE
 ══════════════════════════════════════ */
 .share-section { background: var(--bg); padding: 6rem 0; border-top: 1px solid var(--border); }
 .share-inner { max-width: 1100px; margin: 0 auto; padding: 0 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
@@ -499,7 +528,7 @@ body.admin-mode .stop-delete-btn { display: flex; align-items: center; }
 .share-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
 
 /* ══════════════════════════════════════
-   SOCIAL — DESKTOP
+   SOCIAL / GALLERY
 ══════════════════════════════════════ */
 .gallery-section { background: var(--white); padding: 6rem 0; border-top: 1px solid var(--border); }
 .gallery-inner { max-width: 1100px; margin: 0 auto; padding: 0 2.5rem; }
@@ -510,7 +539,7 @@ body.admin-mode .stop-delete-btn { display: flex; align-items: center; }
 .social-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
 
 /* ══════════════════════════════════════
-   RSVP — DESKTOP
+   RSVP
 ══════════════════════════════════════ */
 .rsvp-section { background: linear-gradient(135deg, var(--teal) 0%, #1D7A6F 100%); padding: 6rem 0; position: relative; overflow: hidden; }
 .rsvp-bg-text { font-family: var(--font-display); font-size: clamp(5rem,15vw,13rem); color: rgba(255,255,255,0.06); position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); white-space: nowrap; pointer-events: none; }
@@ -520,7 +549,7 @@ body.admin-mode .stop-delete-btn { display: flex; align-items: center; }
 .rsvp-sub { font-size: 1.05rem; font-weight: 300; color: rgba(255,255,255,0.8); line-height: 1.75; }
 
 /* ══════════════════════════════════════
-   FOOTER — DESKTOP
+   FOOTER
 ══════════════════════════════════════ */
 footer { background: var(--text); padding: 3rem 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
 .footer-logo { font-family: var(--font-display); font-size: 1.8rem; letter-spacing: 0.05em; color: var(--yellow); }
@@ -530,20 +559,14 @@ footer { background: var(--text); padding: 3rem 2.5rem; display: flex; justify-c
 .footer-links a:hover { color: var(--yellow); }
 
 /* ══════════════════════════════════════
-   MOBILE OVERRIDES  ≤ 768px
-   Everything below is MOBILE-SPECIFIC
+   MOBILE OVERRIDES ≤ 768px
 ══════════════════════════════════════ */
 @media (max-width: 768px) {
+  :root { --nav-h: 56px; --tap: 52px; }
 
-  :root {
-    --nav-h: 56px;
-    --tap: 52px; /* bigger tap targets on mobile */
-  }
-
-  /* ── Mobile Nav ── */
+  /* Nav */
   nav { padding: 0 1rem; border-bottom-width: 2px; }
   .nav-logo { font-size: 0.78rem; }
-
   .nav-hamburger {
     display: flex; flex-direction: column; justify-content: center;
     gap: 5px; background: none; border: none; cursor: pointer;
@@ -553,8 +576,6 @@ footer { background: var(--text); padding: 3rem 2.5rem; display: flex; justify-c
   .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
   .nav-hamburger.open span:nth-child(2) { opacity: 0; }
   .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-  /* Mobile drawer slides down from nav */
   .nav-links {
     position: fixed; top: var(--nav-h); left: 0; right: 0;
     background: var(--white); flex-direction: column; gap: 0;
@@ -566,130 +587,110 @@ footer { background: var(--text); padding: 3rem 2.5rem; display: flex; justify-c
   .nav-links.open { transform: translateY(0); }
   .nav-links li { width: 100%; }
   .nav-links a { padding: 0 1.5rem; height: 54px; font-size: 1rem; border-radius: 0; border-bottom: 1px solid var(--border); }
-  .nav-links a:hover { background: rgba(232,82,58,0.05); }
   #admin-login-link a { color: var(--muted) !important; font-size: 0.9rem; }
   #admin-nav-actions { padding: 1rem 1.5rem; flex-direction: row; flex-wrap: wrap; gap: 0.75rem; }
 
-  /* ── Mobile Hero — single column ── */
-  .hero { grid-template-columns: 1fr; min-height: auto; }
-  .hero-left { padding: 2.5rem 1.5rem 2rem; min-height: 50svh; justify-content: flex-end; }
+  /* Hero — stack vertically */
+  .hero { flex-direction: column; min-height: auto; }
+  .hero-left {
+    flex: none; width: 100%;
+    padding: 3rem 1.5rem 2.5rem;
+    min-height: 55svh;
+    justify-content: flex-end;
+  }
   .hero-title { font-size: clamp(2.8rem, 12vw, 5rem); }
   .hero-tag { font-size: 0.65rem; }
   .film-strip { display: none; }
-  .hero-right { padding: 2rem 1.5rem 3rem; }
+  .hero-right {
+    flex: none; width: 100%;
+    padding: 2rem 1.5rem 3rem;
+    min-height: auto;
+  }
   .hero-desc { font-size: 1rem; margin-bottom: 1.5rem; max-width: 100%; }
   .hero-cta { flex-direction: column; gap: 0.6rem; }
   .hero-cta .btn { width: 100%; font-size: 0.82rem; }
   .hero-stat { gap: 1.5rem; margin-top: 2rem; }
   .stat-block .num { font-size: 2.2rem; }
 
-  /* ── Mobile Next Walk ── */
+  /* Next Walk */
   .next-walk { padding: 3rem 0; }
   .next-walk-inner { grid-template-columns: 1fr; gap: 2rem; padding: 0 1.25rem; }
   .big-date { font-size: 4rem; margin-bottom: 1rem; }
   .walk-desc-block .btn { width: 100%; }
 
-  /* ── Mobile Route ── */
+  /* Route */
   .route-section { padding: 3rem 0; }
   .route-inner { padding: 0 1.25rem; }
   .route-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem; }
-
-  /* Stack map and list vertically on mobile */
   .route-body { grid-template-columns: 1fr; gap: 1rem; }
-
   #map { height: 280px; touch-action: pan-y; }
-
   .loc-item { padding: 1rem; min-height: 56px; }
   .loc-name { font-size: 0.92rem; }
   .stop-delete-btn { min-height: 34px; padding: 0.25rem 0.6rem; font-size: 0.62rem; }
 
-  /* ── Mobile Admin Panel ── */
+  /* Admin Panel */
   #admin-panel { grid-column: auto; margin-top: 1.25rem; padding: 1.25rem; }
   .admin-controls { grid-template-columns: 1fr; }
   .admin-controls .span-2 { grid-column: span 1; }
   .admin-controls .span-4 { grid-column: span 1; }
-  /* Two-column button row on mobile */
   .admin-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
 
-  /* ── Mobile Admin Login Modal — bottom sheet ── */
+  /* Modal */
   .modal-backdrop { align-items: flex-end; padding: 0; }
-  .modal-box {
-    border-radius: 20px 20px 0 0; padding: 0.75rem 1.5rem 2.5rem;
-    max-width: 100%; transform: translateY(40px);
-  }
+  .modal-box { border-radius: 20px 20px 0 0; padding: 0.75rem 1.5rem 2.5rem; max-width: 100%; transform: translateY(40px); }
   .modal-backdrop.open .modal-box { transform: translateY(0); }
-  .modal-box::before {
-    content: ''; display: block;
-    width: 40px; height: 4px; background: var(--border);
-    border-radius: 2px; margin: 0 auto 1.5rem;
-  }
+  .modal-box::before { content: ''; display: block; width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 1.5rem; }
   .modal-title { font-size: 1.8rem; }
 
-  /* ── Mobile Calendar — bottom sheet instead of dropdown ── */
+  /* Calendar */
   .cal-backdrop { background: rgba(44,62,80,0.35); }
   .cal-wrap {
-    position: fixed !important;
-    top: auto !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    border-radius: 20px 20px 0 0 !important;
-    padding: 0.5rem 1.25rem 2rem;
+    position: fixed !important; top: auto !important; bottom: 0 !important;
+    left: 0 !important; right: 0 !important; width: 100% !important;
+    border-radius: 20px 20px 0 0 !important; padding: 0.5rem 1.25rem 2rem;
     box-shadow: 0 -8px 32px rgba(44,62,80,0.15);
   }
-  .cal-wrap::before {
-    content: ''; display: block;
-    width: 40px; height: 4px; background: var(--border);
-    border-radius: 2px; margin: 0.75rem auto 1.25rem;
-  }
+  .cal-wrap::before { content: ''; display: block; width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0.75rem auto 1.25rem; }
   .cal-day { font-size: 0.95rem; }
 
-  /* ── Mobile Walk Builder — full screen bottom sheet ── */
+  /* Walk Builder */
   .walk-builder-panel {
-    width: 100%; top: auto;
-    border-left: none; border-top: 3px solid var(--coral);
-    border-radius: 20px 20px 0 0;
-    transform: translateY(100%);
-    max-height: 92svh;
+    width: 100%; top: auto; border-left: none;
+    border-top: 3px solid var(--coral); border-radius: 20px 20px 0 0;
+    transform: translateY(100%); max-height: 92svh;
   }
   .walk-builder-overlay.open .walk-builder-panel { transform: translateY(0); }
   .wb-header { border-radius: 0; padding: 1rem 1.25rem; }
-  .wb-header::before {
-    content: ''; display: block;
-    width: 40px; height: 4px; background: rgba(255,255,255,0.2);
-    border-radius: 2px; margin: 0 auto 0.75rem;
-  }
+  .wb-header::before { content: ''; display: block; width: 40px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 0.75rem; }
   .wb-body { padding: 1.25rem; }
   .wb-row { grid-template-columns: 1fr; }
   .wb-footer { padding: 1rem 1.25rem; }
 
-  /* ── Mobile Share ── */
+  /* Share */
   .share-section { padding: 3rem 0; }
   .share-inner { grid-template-columns: 1fr; gap: 2rem; padding: 0 1.25rem; }
   .share-card { border-radius: var(--radius); }
   .share-btn-row { grid-template-columns: 1fr 1fr; }
 
-  /* ── Mobile Social ── */
+  /* Social */
   .gallery-section { padding: 3rem 0; }
   .gallery-inner { padding: 0 1.25rem; text-align: center; }
   .social-grid { gap: 1.5rem; margin-top: 2rem; }
   .social-icon-box { width: 72px; height: 72px; }
-  /* No hover lift on mobile */
   .social-link:hover .social-icon-box { transform: none; }
 
-  /* ── Mobile RSVP ── */
+  /* RSVP */
   .rsvp-section { padding: 3.5rem 0; }
   .rsvp-inner { padding: 0 1.25rem; }
   .rsvp-sub { font-size: 0.95rem; }
 
-  /* ── Mobile Footer ── */
+  /* Footer */
   footer { flex-direction: column; align-items: flex-start; padding: 2rem 1.25rem; gap: 1rem; }
   .footer-logo { font-size: 1.5rem; }
   .footer-links { gap: 1.25rem; }
   .footer-links a { min-height: var(--tap); }
 
-  /* ── Remove hover effects on mobile (touch devices) ── */
+  /* Disable hover transforms on touch */
   .btn:hover { transform: none !important; box-shadow: none !important; }
   .loc-item:hover { border-color: var(--border); box-shadow: 0 1px 4px rgba(44,62,80,0.05); }
 }
@@ -759,8 +760,7 @@ footer { background: var(--text); padding: 3rem 2.5rem; display: flex; justify-c
       </div>
       <div class="wb-field">
         <label for="wb-walk-date">Date — tap to pick</label>
-        <input type="text" id="wb-walk-date" placeholder="Tap to pick a date..."
-               readonly onclick="openCalendar(this)">
+        <input type="text" id="wb-walk-date" placeholder="Tap to pick a date..." readonly onclick="openCalendar(this)">
       </div>
       <p class="wb-section-title">Add a stop</p>
       <div class="wb-field autocomplete-wrap">
@@ -875,14 +875,14 @@ footer { background: var(--text); padding: 3rem 2.5rem; display: flex; justify-c
       <div class="walk-meta">
         <div class="meta-row"><span class="meta-key">Date</span><span class="meta-val" id="info-date">Loading...</span></div>
         <div class="meta-row"><span class="meta-key">Time</span><span class="meta-val">10:00 — 13:00</span></div>
-        <div class="meta-row"><span class="meta-key">Meet</span><span class="meta-val">Norреport Station, main entrance</span></div>
+        <div class="meta-row"><span class="meta-key">Meet</span><span class="meta-val">Nørreport Station, main entrance</span></div>
         <div class="meta-row"><span class="meta-key">Route</span><span class="meta-val" id="info-route">Loading...</span></div>
         <div class="meta-row"><span class="meta-key">Level</span><span class="meta-val">All welcome — any camera</span></div>
       </div>
     </div>
     <div class="walk-desc-block">
       <span class="big-date" aria-hidden="true">CPH</span>
-      <p>This month we head into the heart of Norrebro — one of Copenhagen's most vibrant and photogenic neighbourhoods. We'll wander through Assistens Kirkeaard, catch street life on Ravnsborggade, and end at Blaagards Plads for coffee and a photo chat.</p>
+      <p>This month we head into the heart of Norrebro — one of Copenhagen's most vibrant and photogenic neighbourhoods. We'll wander through Assistens Kirkegård, catch street life on Ravnsborggade, and end at Blaagards Plads for coffee and a photo chat.</p>
       <p>Bring whatever camera you have. The vibe is relaxed, curious, and social. No critiques, no pressure — just exploring and shooting together.</p>
       <a href="#rsvp" class="btn btn-coral">Reserve my spot</a>
     </div>
@@ -907,18 +907,10 @@ footer { background: var(--text); padding: 3rem 2.5rem; display: flex; justify-c
         </p>
       </div>
     </div>
-
-    <!-- Desktop: map left, list right. Mobile: stacked -->
     <div class="route-body">
-      <div>
-        <div id="map"></div>
-      </div>
-      <div>
-        <div class="location-list" id="location-list"></div>
-      </div>
+      <div><div id="map"></div></div>
+      <div><div class="location-list" id="location-list"></div></div>
     </div>
-
-    <!-- ADMIN PANEL — spans full width -->
     <div id="admin-panel">
       <div class="admin-panel-header">
         <span style="font-size:1.1rem;">&#128272;</span>
@@ -954,9 +946,7 @@ footer { background: var(--text); padding: 3rem 2.5rem; display: flex; justify-c
         </div>
         <div class="span-4 admin-btn-row">
           <button class="btn-admin" onclick="adminAddStop()">+ Add stop</button>
-          <button class="btn-admin" onclick="openWalkBuilder()" style="background:var(--coral);">
-            Create new walk
-          </button>
+          <button class="btn-admin" onclick="openWalkBuilder()" style="background:var(--coral);">Create new walk</button>
         </div>
       </div>
       <p class="admin-tip">Tap the map to auto-fill coordinates. All changes save instantly for every visitor.</p>
@@ -988,16 +978,14 @@ footer { background: var(--text); padding: 3rem 2.5rem; display: flex; justify-c
         </div>
         <p id="next-refresh" style="font-family:var(--font-mono); font-size:0.62rem; color:var(--muted); margin-top:0.3rem;"></p>
       </div>
-      <button class="btn btn-teal" id="share-btn" onclick="startSharing()"
-              style="width:100%; border:none; cursor:pointer;">Start auto-sharing</button>
+      <button class="btn btn-teal" id="share-btn" onclick="startSharing()" style="width:100%; border:none; cursor:pointer;">Start auto-sharing</button>
       <button id="stop-btn" onclick="stopSharing()"
               style="display:none; width:100%; background:transparent; border:1.5px solid var(--border);
                      color:var(--muted); padding:0.75rem; font-family:var(--font-mono); font-size:0.75rem;
                      letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
                      border-radius:8px; min-height:var(--tap);">Stop sharing</button>
       <div id="link-box" style="display:none;">
-        <p style="font-family:var(--font-mono); font-size:0.62rem; color:var(--muted);
-                  letter-spacing:0.1em; margin-bottom:0.4rem; text-transform:uppercase;">
+        <p style="font-family:var(--font-mono); font-size:0.62rem; color:var(--muted); letter-spacing:0.1em; margin-bottom:0.4rem; text-transform:uppercase;">
           Shareable link — updates every 2 min
         </p>
         <input id="share-link" type="text" readonly
@@ -1005,8 +993,7 @@ footer { background: var(--text); padding: 3rem 2.5rem; display: flex; justify-c
                       color:var(--text); padding:0.65rem 0.9rem; font-family:var(--font-mono);
                       font-size:0.72rem; border-radius:8px; outline:none; min-height:var(--tap);">
         <div class="share-btn-row" style="margin-top:0.5rem;">
-          <button class="btn btn-coral" onclick="copyLink()"
-                  style="border:none; cursor:pointer; font-size:0.75rem; padding:0.6rem;">Copy link</button>
+          <button class="btn btn-coral" onclick="copyLink()" style="border:none; cursor:pointer; font-size:0.75rem; padding:0.6rem;">Copy link</button>
           <button class="btn" onclick="nativeShare()"
                   style="background:var(--blue); color:var(--white); border:none; cursor:pointer;
                          font-size:0.75rem; padding:0.6rem; letter-spacing:0.08em;
@@ -1463,8 +1450,6 @@ document.addEventListener('click',function(e){document.querySelectorAll('.autoco
 
 /* ═══════════════════════════
    CALENDAR
-   Desktop: opens next to input (fixed position)
-   Mobile: slides up as bottom sheet (CSS handles this)
 ═══════════════════════════ */
 var MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
 var DAY_NAMES=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
@@ -1475,9 +1460,7 @@ function openCalendar(inputEl){
   calTargetInput=inputEl;
   var backdrop=document.getElementById('cal-backdrop');
   var wrap=document.getElementById('cal-wrap');
-
   if(!isMobile()){
-    /* Desktop: position next to the input using viewport coords */
     var rect=inputEl.getBoundingClientRect();
     var calH=320, calW=300, margin=8;
     var top=rect.bottom+margin;
@@ -1491,8 +1474,6 @@ function openCalendar(inputEl){
     wrap.style.right='';
     wrap.style.width=calW+'px';
   }
-  /* Mobile: CSS already positions it as a bottom sheet via media query */
-
   backdrop.classList.add('open');
   renderCalendar();
 }
